@@ -4,7 +4,7 @@
 UN1 of your own.
 
 This repository holds the contracts and the source bundle of the UN1 Programmable Custom Launch.
-Website: [un1.art](https://un1.art) · X: [@UN1hook](https://x.com/UN1hook)
+Website: [un1.art](https://un1.art) · X: [@UN1hook](https://x.com/UN1hook) · Review notes: [REVIEW.md](REVIEW.md)
 
 ## Contracts
 
