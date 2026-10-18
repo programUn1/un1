@@ -23,7 +23,9 @@ interface IUN1Renderer {
 
 /// @title UN1Mirror
 /// @notice ERC721 view of the cards held in UN1Token (DN404 style): the token is the source of truth, the mirror emits
-///  the events and keeps NFT approvals. Moving a card here moves exactly one token with it.
+///  the events and keeps NFT approvals. Moving a card here moves exactly one token with it. Deployed before the launch as
+///  public infrastructure (CREATE2 proxy), bound to the token's predicted address; the token checks the binding in its
+///  initializer.
 contract UN1Mirror {
     address public immutable token;
     address public immutable renderer;

@@ -2,6 +2,10 @@
 pragma solidity 0.8.26;
 
 import {Base} from "../utils/Base.sol";
+import {UN1Hook} from "../../src/UN1Hook.sol";
+import {Fees} from "../utils/Fees.sol";
+
+using Fees for UN1Hook;
 
 /// @notice Review R-04 (docs/reviews/gpt-review.md). The reproduction asserted the bug; after the fix (2026-10-15) the
 ///         reserve counts the UNI the beacon already holds.

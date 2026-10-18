@@ -191,6 +191,7 @@ contract UN1Token is ERC20 {
     error NotRevocable();
     error WorkGuarded(uint256 id);
     error BadBeacon();
+    error BadMirror();
     error AlreadyStarted();
     error WalletLimitExceeded(address recipient, uint256 received, uint256 limit);
 
@@ -212,21 +213,26 @@ contract UN1Token is ERC20 {
     }
 
     /// @notice Wire the graph and mint the whole supply to the launch initializer. Deployer only, once.
-    ///         The beacon is deployed before the launch for this token's predicted address: a missing beacon or one
-    ///         bound to another address reverts the whole launch.
+    ///         The beacon and the mirror are deployed before the launch for this token's predicted address: a missing
+    ///         one or one bound to another address reverts the whole launch.
     function initialize(address hook_, address mirror_, address beacon_, address distributor_, address initialHolder)
         external
     {
         if (msg.sender != deployer) revert NotDeployer();
         if (hook != address(0)) revert AlreadyInitialized();
-        (bool ok, bytes memory ret) = beacon_.staticcall(abi.encodeWithSignature("token()"));
-        // compared as a whole word, so a value with dirty high bits is rejected as BadBeacon as well
-        if (!ok || ret.length != 32 || abi.decode(ret, (uint256)) != uint160(address(this))) revert BadBeacon();
+        if (!_boundHere(beacon_)) revert BadBeacon();
+        if (!_boundHere(mirror_)) revert BadMirror();
         hook = hook_;
         mirror = mirror_;
         beacon = beacon_;
         distributor = distributor_;
         _mint(initialHolder, SUPPLY);
+    }
+
+    /// @dev Whether `c.token()` is this token, compared as a whole word (a value with dirty high bits is rejected too).
+    function _boundHere(address c) private view returns (bool) {
+        (bool ok, bytes memory ret) = c.staticcall(abi.encodeWithSignature("token()"));
+        return ok && ret.length == 32 && abi.decode(ret, (uint256)) == uint160(address(this));
     }
 
     // ================= views =================

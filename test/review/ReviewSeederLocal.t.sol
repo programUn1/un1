@@ -20,6 +20,9 @@ import {UN1MasksData} from "../../src/data/UN1MasksData.sol";
 import {UN1PartsData} from "../../src/data/UN1PartsData.sol";
 import {Base} from "../utils/Base.sol";
 import {noExempt} from "../utils/Exempt.sol";
+import {Fees} from "../utils/Fees.sol";
+
+using Fees for UN1Hook;
 
 /// @notice Normal launch rehearsals without a fork. The test is the deployer; ETH/UNI liquidity is local.
 contract ReviewSeederLocalTest is Base {

@@ -8,6 +8,7 @@ import {BalanceDelta} from "@uniswap/v4-core/src/types/BalanceDelta.sol";
 import {PoolKey} from "@uniswap/v4-core/src/types/PoolKey.sol";
 import {UN1Token} from "../src/UN1Token.sol";
 import {UN1Hook} from "../src/UN1Hook.sol";
+import {UN1Mirror} from "../src/UN1Mirror.sol";
 import {UN1Beacon} from "../src/UN1Beacon.sol";
 import {UN1Seeder} from "../src/UN1Seeder.sol";
 import {Base} from "./utils/Base.sol";
@@ -45,10 +46,14 @@ contract PreflightTest is Base {
         seeder = new UN1Seeder(address(manager), address(uni), DEV, address(token), address(hook));
     }
 
-    /// @dev The five launch-graph targets plus the four pre-deployed infrastructure contracts they reference.
-    function _targets() internal view returns (address[9] memory t, string[9] memory n) {
-        t = [masks, partsData, address(token), address(hook), address(beacon), address(distributor), address(renderer), address(mirror), address(seeder)];
-        n = ["UN1MasksData (infra)", "UN1PartsData (infra)", "UN1Token", "UN1Hook", "UN1Beacon (infra)", "UN1Distributor", "UN1Renderer (infra)", "UN1Mirror", "UN1Seeder"];
+    /// @dev The four launch-graph targets, the hook's three CREATE children, and the five pre-deployed infrastructure
+    ///      contracts the graph references.
+    function _targets() internal view returns (address[12] memory t, string[12] memory n) {
+        t = [masks, partsData, address(token), address(hook), address(beacon), address(distributor), address(renderer), address(mirror),
+            address(seeder), address(hook.feeVault()), address(hook.protectionModule()), address(hook.openingTaxVault())];
+        n = ["UN1MasksData (infra)", "UN1PartsData (infra)", "UN1Token", "UN1Hook", "UN1Beacon (infra)", "UN1Distributor",
+            "UN1Renderer (infra)", "UN1Mirror (infra)", "UN1Seeder", "UN1FeeVault (hook child 1)", "UN1ProtectionModule (hook child 2)",
+            "UN1OpeningTaxVault (hook child 3)"];
     }
 
     /// @dev The same linear disassembly as the Programmable CLI (runtime-immutables.mjs, assertNoDelegatingRuntimeOpcodes).
@@ -62,8 +67,8 @@ contract PreflightTest is Base {
     }
 
     function test_runtimes_noCallcodeDelegatecallSelfdestruct() public {
-        (address[9] memory t, string[9] memory n) = _targets();
-        for (uint256 i; i < 9; ++i) {
+        (address[12] memory t, string[12] memory n) = _targets();
+        for (uint256 i; i < 12; ++i) {
             (uint256 pc, uint8 op) = _firstForbidden(t[i].code);
             emit log_named_uint(string.concat(n[i], " runtime bytes"), t[i].code.length);
             assertEq(pc, type(uint256).max, string.concat(n[i], ": forbidden opcode ", vm.toString(op), " at ", vm.toString(pc)));
@@ -71,13 +76,15 @@ contract PreflightTest is Base {
     }
 
     function test_runtimes_noCborMetadata() public view {
-        (address[9] memory t, string[9] memory n) = _targets();
+        (address[12] memory t, string[12] memory n) = _targets();
         bytes memory solc = hex"64736f6c6343"; // CBOR text "solc" + version tag, present only when metadata is appended
-        for (uint256 i; i < 9; ++i) assertFalse(_contains(t[i].code, solc), string.concat(n[i], " carries CBOR metadata"));
+        for (uint256 i; i < 12; ++i) assertFalse(_contains(t[i].code, solc), string.concat(n[i], " carries CBOR metadata"));
     }
 
     function test_sizes_withinEip170AndGraphLimits() public {
-        (address[9] memory t, string[9] memory n) = _targets();
+        (address[12] memory t, string[12] memory n) = _targets();
+        for (uint256 i = 9; i < 12; ++i) assertLe(t[i].code.length, 24_576, string.concat(n[i], " runtime over EIP-170"));
+        // the children's creation code is part of the hook's init code
         string[9] memory art = [
             "UN1MasksData.sol:UN1MasksData", "UN1PartsData.sol:UN1PartsData", "UN1Token.sol:UN1Token", "UN1Hook.sol:UN1Hook",
             "UN1Beacon.sol:UN1Beacon", "UN1Distributor.sol:UN1Distributor", "UN1Renderer.sol:UN1Renderer", "UN1Mirror.sol:UN1Mirror",
@@ -134,8 +141,6 @@ contract PreflightTest is Base {
         hook.beforeSwap(address(this), officialKey, sp, "");
         vm.expectRevert(UN1Hook.NotPoolManager.selector);
         hook.afterSwap(address(this), officialKey, sp, z, "");
-        vm.expectRevert(UN1Hook.NotPoolManager.selector);
-        hook.unlockCallback("");
         // disabled: never succeed
         vm.expectRevert(UN1Hook.HookNotImplemented.selector);
         hook.afterInitialize(address(this), officialKey, SQRT_PRICE_1_1, 0);
@@ -187,16 +192,23 @@ contract PreflightTest is Base {
             address(new RawBeacon("")), // empty return data
             address(new RevertingBeacon())
         ];
+        UN1Mirror m2 = new UN1Mirror(address(t2), address(renderer));
         for (uint256 i; i < wrong.length; ++i) {
             vm.expectRevert(UN1Token.BadBeacon.selector);
-            t2.initialize(h2, address(mirror), wrong[i], address(distributor), address(this));
+            t2.initialize(h2, address(m2), wrong[i], address(distributor), address(this));
             vm.expectRevert(UN1Hook.BadBeacon.selector);
             UN1Hook(h2).initialize(address(distributor), wrong[i]);
         }
+        UN1Beacon b2 = new UN1Beacon(address(t2), address(uni));
+        // the mirror, also deployed before the launch, is checked the same way
+        wrong[0] = address(mirror); // bound to the main token
+        for (uint256 i; i < wrong.length; ++i) {
+            vm.expectRevert(UN1Token.BadMirror.selector);
+            t2.initialize(h2, wrong[i], address(b2), address(distributor), address(this));
+        }
         assertEq(t2.hook(), address(0), "nothing written by a refused initializer");
         assertEq(t2.totalSupply(), 0);
-        UN1Beacon b2 = new UN1Beacon(address(t2), address(uni));
-        t2.initialize(h2, address(mirror), address(b2), address(distributor), address(this));
+        t2.initialize(h2, address(m2), address(b2), address(distributor), address(this));
         UN1Hook(h2).initialize(address(distributor), address(b2));
         assertEq(t2.beacon(), address(b2));
         assertEq(address(b2.hook()), h2, "the beacon reads the hook from its token");
@@ -212,9 +224,10 @@ contract PreflightTest is Base {
     }
 
     function test_sources_noSelfdestruct() public view {
-        string[13] memory files = [
-            "src/UN1Token.sol", "src/UN1Hook.sol", "src/UN1Mirror.sol", "src/UN1Beacon.sol", "src/UN1Distributor.sol",
-            "src/UN1Renderer.sol", "src/UN1Seeder.sol", "src/libraries/Appearance.sol", "src/libraries/Buf.sol",
+        string[17] memory files = [
+            "src/UN1Token.sol", "src/UN1Hook.sol", "src/UN1FeeVault.sol", "src/UN1ProtectionModule.sol", "src/UN1OpeningTaxVault.sol",
+            "src/UN1Mirror.sol", "src/UN1Beacon.sol", "src/UN1Distributor.sol", "src/UN1Renderer.sol", "src/UN1Seeder.sol",
+            "src/libraries/Polish.sol", "src/libraries/Appearance.sol", "src/libraries/Buf.sol",
             "src/libraries/Deal.sol", "src/libraries/DrandBeacon.sol", "src/libraries/DrandRound.sol", "src/libraries/FeeMath.sol"
         ];
         for (uint256 i; i < files.length; ++i) {

@@ -8,6 +8,10 @@ import {Currency} from "@uniswap/v4-core/src/types/Currency.sol";
 import {UN1Seeder} from "../src/UN1Seeder.sol";
 import {ForkGraph, IPermit2R, IUniversalRouterR, ExactInputSingle} from "./ForkRehearsal.t.sol";
 import {PathKey, ExactInputCanonical} from "./Fork.t.sol";
+import {UN1Hook} from "../src/UN1Hook.sol";
+import {Fees} from "./utils/Fees.sol";
+
+using Fees for UN1Hook;
 
 /// @notice Launch protection on a mainnet fork (read-only, nothing broadcast): the real canonical Universal Router
 ///  (0xd92A…446C) names the buyer; the older router (0x66a9…A8Af) cannot buy during protection; the opening fee, the

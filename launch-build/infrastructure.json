@@ -41,31 +41,45 @@
   {
    "name": "beacon",
    "contract": "src/UN1Beacon.sol:UN1Beacon",
-   "address": "0xe9A1C3c7455bC9B2d706FA68e511080863C58937",
+   "address": "0xc3647c83679Ae638f26CadF5f22bac852E611375",
    "constructorArguments": [
-    "0x5B1f03F12172F1953f69AA8a3Cbba99aaff02676",
+    "0x3158923E41b6242c772d72eFFF863C508BB14D4c",
     "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
    ],
-   "initCodeBytes": 6886,
-   "initCodeHash": "0xcf3761274e5dfd02262eb87a98c2577bc8a5d039c808fb424c4c0ee94b37ff75",
-   "runtimeBytes": 6612,
-   "runtimeCodeHash": "0x3090d2054d3ba3c081bb03c8abb30de7e4cf560d1b27e44a0bcbaf5072b9e1bc",
+   "initCodeBytes": 7000,
+   "initCodeHash": "0x3b35f0b37417d3493f76387dd6dbd7c9e3241012d559925bec77fcf91bf6dd3e",
+   "runtimeBytes": 6726,
+   "runtimeCodeHash": "0x2e2ed5e36cd75202b1c2144aeabf43174ca7df13ae0b7d0ccbbbaed145fdfa83",
    "calldata": "launch-build/infra/beacon.calldata.hex"
+  },
+  {
+   "name": "mirror",
+   "contract": "src/UN1Mirror.sol:UN1Mirror",
+   "address": "0x31Cb0df4a0E312faB5AC80D8d1911Cb0F2489158",
+   "constructorArguments": [
+    "0x3158923E41b6242c772d72eFFF863C508BB14D4c",
+    "0xFe7a28d87Aae6a519d1f52960CE8744bD408361F"
+   ],
+   "initCodeBytes": 4533,
+   "initCodeHash": "0x647018def49bbd283530942bca04c5ab217ac9ab2efc55dfebc0e439b928678a",
+   "runtimeBytes": 4238,
+   "runtimeCodeHash": "0x3c3a041b7b3f76b0736bc82ef47ea0b98c62cef50902d8529592f248f48cd7f4",
+   "calldata": "launch-build/infra/mirror.calldata.hex"
   }
  ],
  "tokenPrediction": {
   "targetId": "un1-token",
-  "address": "0x5B1f03F12172F1953f69AA8a3Cbba99aaff02676",
+  "address": "0x3158923E41b6242c772d72eFFF863C508BB14D4c",
   "graphFactory": "0xB012e4A8F2c5FC4E8E4faCA9D5Ad6FfF13FBA887",
   "router": "0xBE4bF6Ac8c6F012E1C8f25747A9fBccB2FDAC4C3",
   "launchWallet": "0x722FEad20748DEdB2AB2AE22DfCe77971B394043",
   "nonce": "0x0dab0f535f09776465dbef4f72f2df54c2345cc9bef120b6b5f2be08f0cb898c",
-  "sourceBundleSha256": "sha256:5e40d2d52f06b9bcfa83d1332e7339bc65d491088c3ed826f128362d1f005e1f",
-  "routeNamespace": "0x4d979fc1ada7ddd112507b11623179b399b0890ea4f4a103c0529efb5b471028",
+  "sourceBundleSha256": "sha256:02a21bcca9dd485d43162e96401a7fa1c1ecb2b8d7692f3d77dd9fd23abf67e5",
+  "routeNamespace": "0x13117820879bcd421864e71e25def8dbe47b1ff52c05eabad7ded1a07ba80879",
   "targetIdHash": "0x90fc76286a450a790b881f683d6fe3036c74b4c5280a5eab8cf6d9f7369bd028",
   "applicantSalt": "0x0000000000000000000000000000000000000000000000000000000000000001",
-  "effectiveSalt": "0x873c843eb4ba4425a6aaea078660fee04e2598797a459f4cf276333a7f9b384d",
-  "initCodeHash": "0xb0453da0b059d99dfc8efe9df7f5f33809d7072b80c5295ab5d966ae4df4adc1",
+  "effectiveSalt": "0xbe4a52f5471a291588df0f63142e1b1e4f0751cddb7a8af24228ec0aabdc63cc",
+  "initCodeHash": "0x3f5f7d21747becd724ee572c3231744f560bb1e959b569d934218d259ede1919",
   "bundleFiles": [
    {
     "path": "foundry.toml",
@@ -73,23 +87,19 @@
    },
    {
     "path": "launch-build/artifacts/UN1Distributor.json",
-    "sha256": "sha256:6d4df046f4595a1d3a050fed6214d6aeb788f653214b7bec4c204051e497637b"
+    "sha256": "sha256:5353058b8348c5b16e9865c97226543efc5cc2561f37b648affac2f50bcbda76"
    },
    {
     "path": "launch-build/artifacts/UN1Hook.json",
-    "sha256": "sha256:71cced11fda04bd3f1856bcf8f444bc0978a5c015726e29ab70a4935e54d564c"
-   },
-   {
-    "path": "launch-build/artifacts/UN1Mirror.json",
-    "sha256": "sha256:827138cf54b3a771841eb7e469af474b496774625cd938a448aa7a9ef2c307d5"
+    "sha256": "sha256:6e21b0b8aebfb457d58ebd6417bb7552bcc388d904e220fe75f5dab197d25ada"
    },
    {
     "path": "launch-build/artifacts/UN1Seeder.json",
-    "sha256": "sha256:e12f625cc9b7c65eb9e657a4c9d593bd64160d659408aa484e42364dcca3eddd"
+    "sha256": "sha256:22cc5818074a49216066b16cc9edfa1f41604cc55b034efaa161457398f06c8c"
    },
    {
     "path": "launch-build/artifacts/UN1Token.json",
-    "sha256": "sha256:626afd00ebcf56a5389976ade840f430ce6f66d47c8f72e9c14c52fef407a425"
+    "sha256": "sha256:8d846e25ce7d4a4751bca2187b458e087cd48598052d5b6ec1ba2e02d58f7b6b"
    },
    {
     "path": "launch-build/assets/un1.png",
@@ -97,15 +107,15 @@
    },
    {
     "path": "launch-build/evidence/forge-test-report.json",
-    "sha256": "sha256:2914c528b76b793ec843637c3c425ed4b8727b6db050ee49c5b05c0d4a9329cb"
+    "sha256": "sha256:01913b52cf63dc5cbeb294e5d9e1d3317e5174108f85fce7b43a40bac2cd0ef2"
    },
    {
     "path": "launch-build/evidence/gas-report.json",
-    "sha256": "sha256:35191c7b697ea465e3aa7ca8fc2c5e94edb7ed7cbc456898b80838778384a8e4"
+    "sha256": "sha256:d26939a56f40b3ed7ac75b6915e348480d98fa03232e649e6758f317f36e6648"
    },
    {
     "path": "launch-build/un1.standard-json.json",
-    "sha256": "sha256:4f1f17274efbf318b496060c42d2a6bb4a11b2532de295d65bfd53be476d7a05"
+    "sha256": "sha256:b72f65738e5fe396402646a61fd0f485bf401a53006ba86007544138f53ae29e"
    },
    {
     "path": "remappings.txt",
@@ -113,47 +123,59 @@
    },
    {
     "path": "src/UN1Beacon.sol",
-    "sha256": "sha256:bfbed3909a6817a0621e1321ea84ba2ac57b5da84ba220452b04921f4e8fcf32"
+    "sha256": "sha256:2de646c4a06836b034beff996e62e445231c48c790c4bfd33900bbeaf4056100"
    },
    {
     "path": "src/UN1Distributor.sol",
-    "sha256": "sha256:9e45530426f1dd7936b02f1210ca1bc73f2e0f0d89aeeb16aa280181c91e11c6"
+    "sha256": "sha256:34e5c830129ecfd7e46790ba0a17a7e129c443d1695b771c5bb342b66b71ef89"
+   },
+   {
+    "path": "src/UN1FeeVault.sol",
+    "sha256": "sha256:7aaeb46a8c85dff4379f2e62c3f75a04a32d8dcca5f14da719c030166317e863"
    },
    {
     "path": "src/UN1Hook.sol",
-    "sha256": "sha256:53fe21461af39debcfc2e9cba3d310c7683c830f25801c62059f2eb637783927"
+    "sha256": "sha256:9699d53a7dd46195d00b3ab0ea08bfc95a053046364f9c3c6cc02fa8475bd72c"
    },
    {
     "path": "src/UN1Mirror.sol",
-    "sha256": "sha256:4b9639c53d326e418a733ede4b13c0f9dfae3e7f7984f06a3e90868fdbe593dc"
+    "sha256": "sha256:cf3d406c9662801fde164ec6b2f3f8c6fca8140eb08aab9c858be61d3cb0d180"
+   },
+   {
+    "path": "src/UN1OpeningTaxVault.sol",
+    "sha256": "sha256:02204fb3d7291f908594d774837c978d654787f5a6a4558f8aca5f8de3faf631"
+   },
+   {
+    "path": "src/UN1ProtectionModule.sol",
+    "sha256": "sha256:0ee366a3bd37c6a4e08c0f4b980b60ab0d6e752a9d4a0cba01cb2c8b05388234"
    },
    {
     "path": "src/UN1Renderer.sol",
-    "sha256": "sha256:fcd2208a3c008af7686a560f81db5aa5b150d8aad26b96af9b76c7e352aa40ca"
+    "sha256": "sha256:7dab7165c1d2435487bd0507f63dd4ce6c93bd83740c8bec998e7fc011781869"
    },
    {
     "path": "src/UN1Seeder.sol",
-    "sha256": "sha256:4ab2bd008117b325cd1c09ccf05ef4f9f694a2c33f1dd8fd76a57773512ce063"
+    "sha256": "sha256:d07416b3cd0176a12a2d7ba08a2ccd971794bf61c93eebcf353a594c1f47cd03"
    },
    {
     "path": "src/UN1Token.sol",
-    "sha256": "sha256:222074894b4031710371b0a2a08f9cd197feb2caf40a64e8066840f203ea89ab"
+    "sha256": "sha256:dcefbaeeef94885d813ad64ea9a7476d90bae90b59b077b7656d367ddc7bab87"
    },
    {
     "path": "src/data/UN1MasksData.sol",
-    "sha256": "sha256:d29d1473d8a2480dc9bef4eed1fbf7ac8c0a575ca1d609e8b2c220680b0206ce"
+    "sha256": "sha256:71023d4ef30a113ae3482dbe0b1f7512e50024399a78d00f15dda8997e51f68f"
    },
    {
     "path": "src/data/UN1PartsData.sol",
-    "sha256": "sha256:07ce4929c47f05216c19761f0d1f2a616631583828b7eed8cab387e2a4499583"
+    "sha256": "sha256:c8f3a219f5936e4f45c4fa730998ff8833e76ad528458c934f1b35ecca8595f1"
    },
    {
     "path": "src/libraries/Appearance.sol",
-    "sha256": "sha256:3a512ddab6bd1d0b1f4f358282b3ffecfaf07eeb39e922e48e9a4ee3398e26c8"
+    "sha256": "sha256:45cd2b00bc8c4fc4a05ff0299c38b4979097a60f3894131b7975a89cd6950185"
    },
    {
     "path": "src/libraries/Buf.sol",
-    "sha256": "sha256:cb5fd90682e4012c33c8337920889a2f564918bdd348d14bf235f96f13a96468"
+    "sha256": "sha256:f41388ace54787f5087a96150f379c4614d98ec5a42ececd6af6e4a1cc19decd"
    },
    {
     "path": "src/libraries/Deal.sol",
@@ -161,7 +183,7 @@
    },
    {
     "path": "src/libraries/DrandBeacon.sol",
-    "sha256": "sha256:1244f31595917da6c23cd280be6c99f0be08e7e310fe8181eeab567077df8fe9"
+    "sha256": "sha256:7d0f08f916aac7779348b5d9b925c5285949f46e9f93639fdcf14c6413a12a3d"
    },
    {
     "path": "src/libraries/DrandRound.sol",
@@ -173,8 +195,41 @@
    },
    {
     "path": "src/libraries/Polish.sol",
-    "sha256": "sha256:4fab69998c125c392995b74151adb1f5a0affcd902a5f53cc048a2d42f6a64b3"
+    "sha256": "sha256:e89f79c80b8be17ffca6ece690363410890fc0b0f09e8d999ba5541282d61aa5"
    }
   ]
+ },
+ "hookPrediction": {
+  "targetId": "un1-hook",
+  "address": "0xFA673b06dCde76c255f8Cf10d3dF1C83d52Ce5cC",
+  "graphFactory": "0xB012e4A8F2c5FC4E8E4faCA9D5Ad6FfF13FBA887",
+  "router": "0xBE4bF6Ac8c6F012E1C8f25747A9fBccB2FDAC4C3",
+  "launchWallet": "0x722FEad20748DEdB2AB2AE22DfCe77971B394043",
+  "nonce": "0x0dab0f535f09776465dbef4f72f2df54c2345cc9bef120b6b5f2be08f0cb898c",
+  "sourceBundleSha256": "sha256:02a21bcca9dd485d43162e96401a7fa1c1ecb2b8d7692f3d77dd9fd23abf67e5",
+  "routeNamespace": "0x13117820879bcd421864e71e25def8dbe47b1ff52c05eabad7ded1a07ba80879",
+  "targetIdHash": "0x8c0d5ed7cb703e5449f1251d5afc590c45cb52b27c036ed60be18aad359d20d9",
+  "applicantSalt": "0x0000000000000000000000000000000000000000000000000000000000003935",
+  "effectiveSalt": "0xaeb4c951338da4d7a6e5995ac60a4fe1d5efe56b8463f3bb335aeaa9dc1120dd",
+  "initCodeHash": "0xe9ee0499fab8e7636a5623e5cc2d48b85344b162d0784eab1685ab69f6f2f861",
+  "constructorArguments": [
+   "0x000000000004444c5dc75cB358380D2e3dE08A90",
+   "0x3158923E41b6242c772d72eFFF863C508BB14D4c",
+   "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
+   "0x722FEad20748DEdB2AB2AE22DfCe77971B394043",
+   [
+    "0xAE97D8f38F6aE18Ac8227b50dFC962Bac89C6708",
+    "0xF5301305888EA7FaBe87531ae645e1C8A185Eb04",
+    "0x43024F194Bef627E98daB443eEb6d0FdAAdd6e1e",
+    "0x85CE3f5B904a4BC8072c50e1D84330b1A41247c7",
+    "0xe506Bb0f78474ADe04A9a395669b866C05B10CAC",
+    "0x6b9Ba3679A3380Ed8998B062a57934a975AB738B"
+   ]
+  ],
+  "children": {
+   "feeVault": "0x5DcE9EA8d40A69e264DF12881532E47f1f35C223",
+   "protectionModule": "0x2B5Ac0A8E54295053A9BBCF2920A428c44ecBF03",
+   "openingTaxVault": "0x2d1bC455Fad78bA49b02FAd6869A0891F512D82c"
+  }
  }
 }

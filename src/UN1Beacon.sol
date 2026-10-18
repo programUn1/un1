@@ -12,18 +12,23 @@ interface IUN1TokenReveal {
     function hook() external view returns (address);
 }
 
-interface IUN1HookCollect {
-    function collect(address recipient) external;
+interface IUN1HookBounty {
+    function feeVault() external view returns (IUN1BountyVault);
     function devFeeOf(uint64 round) external view returns (uint256);
+}
+
+interface IUN1BountyVault {
+    function claimBounty() external returns (uint256);
 }
 
 /// @title UN1Beacon
 /// @notice Reveals pending slots. Anyone brings a drand quicknet signature for a round; it is verified on-chain with
 ///  the EIP-2537 precompiles (Temo's DrandBeacon) and its keccak is the randomness. The result of a round is fixed by
 ///  the signature: the caller only delivers it, it cannot choose it.
-///  - bounty in UNI, funded from the dev fee (the hook tops up a capped reserve): a base amount once per round plus an
-///    amount per revealed slot, so that MEV bots reveal without any keeper; a round is paid at most the dev fee its own
-///    buys paid (`hook.devFeeOf`), so opening slots only to collect the bounty never pays
+///  - bounty in UNI, funded from the dev fee (the hook tops up a capped reserve, held for the beacon by the hook's
+///    normal-fee vault): a base amount once per round plus an amount per revealed slot, so that MEV bots reveal without
+///    any keeper; a round is paid at most the dev fee its own buys paid (`hook.devFeeOf`), so opening slots only to
+///    collect the bounty never pays
 ///  - fallback: a round still unrevealed one day after its time uses the hash of the block after its last slot
 ///    (EIP-2935 history, about 27 hours). To prefer it over drand, someone would have to stop every bot, the keeper and
 ///    every user from submitting the signature for a whole day.
@@ -66,8 +71,8 @@ contract UN1Beacon {
     }
 
     /// @notice The token's hook (set once by the token's initializer).
-    function hook() public view returns (IUN1HookCollect) {
-        return IUN1HookCollect(token.hook());
+    function hook() public view returns (IUN1HookBounty) {
+        return IUN1HookBounty(token.hook());
     }
 
     /// @param signature the round's BLS signature, uncompressed (x || y, 64 bytes each); see keeper/drand_decompress.py
@@ -114,7 +119,7 @@ contract UN1Beacon {
             basePaid[round] = true;
             amount += BASE_BOUNTY;
         }
-        IUN1HookCollect h = hook();
+        IUN1HookBounty h = hook();
         uint256 paid = paidOf[round];
         uint256 budget = h.devFeeOf(round);
         uint256 room = budget > paid ? budget - paid : 0;
@@ -122,7 +127,7 @@ contract UN1Beacon {
         if (payee == address(0)) amount = 0;
         uint256 bal = uni.balanceOf(address(this));
         if (bal < amount) {
-            try h.collect(address(this)) {} catch {}
+            try h.feeVault().claimBounty() {} catch {}
             bal = uni.balanceOf(address(this));
         }
         if (amount > bal) amount = bal;

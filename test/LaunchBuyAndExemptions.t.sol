@@ -7,12 +7,16 @@ import {Hooks} from "@uniswap/v4-core/src/libraries/Hooks.sol";
 import {CustomRevert} from "@uniswap/v4-core/src/libraries/CustomRevert.sol";
 import {PoolSwapTest} from "@uniswap/v4-core/src/test/PoolSwapTest.sol";
 import {UN1Hook} from "../src/UN1Hook.sol";
+import {UN1ProtectionModule} from "../src/UN1ProtectionModule.sol";
 import {Base} from "./utils/Base.sol";
+import {Fees} from "./utils/Fees.sol";
+
+using Fees for UN1Hook;
 
 /// @notice 2026-10-18: the launch buy goes to the developer as plain tokens (marked LAUNCH_BUY, only on the pool's
-///  first swap), and up to six wallets besides the developer are exempt from the opening fee, fixed in the hook's
-///  constructor (launch protection v1: "the developer and up to six distinct additional wallets"). Exempt wallets keep
-///  the 2% caps; sell fees never change.
+///  first swap), and up to six wallets besides the developer are exempt from the opening fee, fixed in the protection
+///  module the hook creates (launch protection v1: "the developer and up to six distinct additional wallets"). Exempt
+///  wallets keep the 2% caps; sell fees never change.
 contract LaunchBuyAndExemptionsTest is Base {
     address carol = makeAddr("carol");
     address dave = makeAddr("dave");
@@ -80,13 +84,14 @@ contract LaunchBuyAndExemptionsTest is Base {
     // ---------------------------------------------------------------- exempt wallets
 
     function test_exempt_list_asDeployed() public view {
-        address[6] memory e = hook.exemptWallets();
+        UN1ProtectionModule m = hook.protectionModule();
+        address[6] memory e = m.exemptWallets();
         assertEq(e[0], carol);
         assertEq(e[3], dave);
         assertEq(e[1], address(0));
-        assertTrue(hook.isExempt(carol) && hook.isExempt(dave) && hook.isExempt(DEV));
-        assertFalse(hook.isExempt(alice));
-        assertFalse(hook.isExempt(address(0)), "an empty slot exempts nobody");
+        assertTrue(m.isExempt(carol) && m.isExempt(dave) && m.isExempt(DEV));
+        assertFalse(m.isExempt(alice));
+        assertFalse(m.isExempt(address(0)), "an empty slot exempts nobody");
     }
 
     function test_exempt_paysNoOpeningFee_othersDo() public {
@@ -112,15 +117,15 @@ contract LaunchBuyAndExemptionsTest is Base {
 
     function test_exempt_constructorRejectsBadLists() public {
         address[6] memory e;
-        address[5] memory bad = [DEV, address(token), address(manager), hook.ROUTER(), carol];
+        address[5] memory bad = [DEV, address(token), address(manager), hook.protectionModule().ROUTER(), carol];
         for (uint256 i; i < 4; ++i) {
             e[2] = bad[i];
-            vm.expectRevert(UN1Hook.InvalidExemption.selector);
+            vm.expectRevert(UN1ProtectionModule.InvalidExemption.selector);
             new UN1Hook(manager, address(token), address(uni), DEV, e);
         }
         e[2] = carol;
         e[5] = carol; // listed twice
-        vm.expectRevert(UN1Hook.InvalidExemption.selector);
+        vm.expectRevert(UN1ProtectionModule.InvalidExemption.selector);
         new UN1Hook(manager, address(token), address(uni), DEV, e);
     }
 }

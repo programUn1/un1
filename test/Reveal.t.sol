@@ -5,6 +5,10 @@ import {UN1Beacon} from "../src/UN1Beacon.sol";
 import {DrandBeacon} from "../src/libraries/DrandBeacon.sol";
 import {DrandRound} from "../src/libraries/DrandRound.sol";
 import {Base} from "./utils/Base.sol";
+import {UN1Hook} from "../src/UN1Hook.sol";
+import {Fees} from "./utils/Fees.sol";
+
+using Fees for UN1Hook;
 
 /// @dev EIP-2935 stand-in for the local chain: hash(n) = keccak256(n).
 contract HistoryMock {

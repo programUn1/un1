@@ -8,6 +8,10 @@ import {Position} from "@uniswap/v4-core/src/libraries/Position.sol";
 import {PoolIdLibrary} from "@uniswap/v4-core/src/types/PoolId.sol";
 import {PoolKey} from "@uniswap/v4-core/src/types/PoolKey.sol";
 import {Base} from "./utils/Base.sol";
+import {UN1Hook} from "../src/UN1Hook.sol";
+import {Fees} from "./utils/Fees.sol";
+
+using Fees for UN1Hook;
 
 contract SafeLike {} // a contract wallet without the 7702 prefix
 

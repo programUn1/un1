@@ -6,16 +6,24 @@ import {IPoolManager} from "@uniswap/v4-core/src/interfaces/IPoolManager.sol";
 import {PoolKey} from "@uniswap/v4-core/src/types/PoolKey.sol";
 import {UN1Token} from "../src/UN1Token.sol";
 import {UN1Hook} from "../src/UN1Hook.sol";
+import {UN1FeeVault} from "../src/UN1FeeVault.sol";
+import {UN1OpeningTaxVault} from "../src/UN1OpeningTaxVault.sol";
 import {FeeMath} from "../src/libraries/FeeMath.sol";
 import {Base} from "./utils/Base.sol";
+import {Fees} from "./utils/Fees.sol";
+
+using Fees for UN1Hook;
 
 /// @notice Only through the hook.
 ///  ① only official-pool buys deal new cards (draw); removing liquidity and transfers never do.
 ///  ② the token enters or leaves the PoolManager only with an allowance the official hook gave in the same transaction: other v4 pools and direct transfers fail.
 ///  Also: fees in UNI (four directions), fee claims, permissions. Launch protection is in LaunchProtection.t.sol.
 contract OnlyHookTest is Base {
+    /// @dev UNI claims backing the fees: all in the two vaults, none left with the hook.
     function _uniClaims() internal view returns (uint256) {
-        return manager.balanceOf(address(hook), uint256(uint160(address(uni))));
+        uint256 id = uint256(uint160(address(uni)));
+        assertEq(manager.balanceOf(address(hook), id), 0, "the hook holds no fee claims");
+        return manager.balanceOf(address(hook.feeVault()), id) + manager.balanceOf(address(hook.openingTaxVault()), id);
     }
 
     function _assertSplit(uint256 gross, uint256 fee) internal view {
@@ -84,10 +92,12 @@ contract OnlyHookTest is Base {
         assertEq(uni.balanceOf(address(beacon)), 0.3 ether);
         assertEq(uni.balanceOf(DISTRIBUTOR), 2.1 ether);
         assertEq(_uniClaims(), 0);
-        vm.expectRevert(UN1Hook.UnknownRecipient.selector);
-        hook.collect(alice);
-        vm.expectRevert(UN1Hook.NothingToCollect.selector);
-        hook.collect(PLATFORM);
+        UN1FeeVault v = hook.feeVault();
+        UN1OpeningTaxVault t = hook.openingTaxVault();
+        vm.expectRevert(UN1FeeVault.NothingToClaim.selector);
+        v.claimPlatform();
+        vm.expectRevert(UN1OpeningTaxVault.NothingToClaim.selector);
+        t.claim();
     }
 
     // ---------------------------------------------------------------- rule ①: only official-pool buys deal new cards
@@ -167,8 +177,12 @@ contract OnlyHookTest is Base {
         vm.expectRevert(UN1Hook.NotPoolManager.selector);
         hook.beforeSwap(address(this), officialKey, sp, ZERO_BYTES);
 
-        vm.expectRevert(UN1Hook.NotPoolManager.selector);
-        hook.unlockCallback(abi.encode(alice, 1 ether));
+        UN1FeeVault v = hook.feeVault();
+        UN1OpeningTaxVault t = hook.openingTaxVault();
+        vm.expectRevert(UN1FeeVault.NotPoolManager.selector);
+        v.unlockCallback(abi.encode(alice, 1 ether));
+        vm.expectRevert(UN1OpeningTaxVault.NotPoolManager.selector);
+        t.unlockCallback(abi.encode(1 ether));
     }
 
     function test_halvingFee_epoch1() public view {

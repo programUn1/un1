@@ -2,7 +2,6 @@
 pragma solidity 0.8.26;
 
 import {IHooks} from "@uniswap/v4-core/src/interfaces/IHooks.sol";
-import {IUnlockCallback} from "@uniswap/v4-core/src/interfaces/callback/IUnlockCallback.sol";
 import {IPoolManager} from "@uniswap/v4-core/src/interfaces/IPoolManager.sol";
 import {Hooks} from "@uniswap/v4-core/src/libraries/Hooks.sol";
 import {SafeCast} from "@uniswap/v4-core/src/libraries/SafeCast.sol";
@@ -14,6 +13,9 @@ import {BeforeSwapDelta, BeforeSwapDeltaLibrary, toBeforeSwapDelta} from "@unisw
 import {Math} from "@openzeppelin/contracts/utils/math/Math.sol";
 import {FeeMath} from "./libraries/FeeMath.sol";
 import {DrandRound} from "./libraries/DrandRound.sol";
+import {UN1FeeVault} from "./UN1FeeVault.sol";
+import {UN1ProtectionModule} from "./UN1ProtectionModule.sol";
+import {UN1OpeningTaxVault} from "./UN1OpeningTaxVault.sol";
 
 interface IBalanceOf {
     function balanceOf(address account) external view returns (uint256);
@@ -26,27 +28,25 @@ interface IUN1Token {
     function startProtection() external;
 }
 
-/// @dev The Universal Router reports the account that called it (the v4 locker) to hooks.
-interface IMsgSender {
-    function msgSender() external view returns (address);
-}
-
 /// @title UN1Hook
-/// @notice The one permanent hook of the UN1/UNI pool. Immutable, no owner.
-///  - every swap pays a fee in UNI: platform 0.3% + dev 0.3% + halving fee (2.1%, halved every 2,100 composes)
-///  - fees stay in the PoolManager as UNI claims owned by this hook; anyone can pay them out, only to fixed recipients
+/// @notice The one permanent hook of the UN1/UNI pool. Immutable, no owner. Its constructor creates, in this order (as
+///  Programmable's launch protection v1 does): the normal-fee vault (CREATE child 1), the protection module (child 2) and
+///  the opening-tax vault (child 3).
+///  - every swap pays a fee in UNI: platform 0.3% + dev 0.3% + halving fee (2.1%, halved every 2,100 composes). The hook
+///    mints it as UNI claims to the normal-fee vault, which pays each part only to its fixed recipient
 ///  - reveal bounties come out of the dev fee: it first tops up a capped reserve for the beacon, the rest goes to the dev;
 ///    the dev fee of the buys is recorded per drand round, and the beacon pays a round no more than its buys paid
 ///  - the token may enter or leave the PoolManager only for the exact amounts this hook authorizes (rule ②)
 ///  - only buys authorize a draw, so only official-pool buys deal new cards (rule ①); liquidity moves naked tokens
 ///  - launch protection (Programmable launch protection v1, with UNI as the quote): for 5 minutes after the pool is
-///    created, buys go through the canonical Universal Router and each buyer (the router's msgSender) may buy at most
-///    2% of supply in total; the token caps what each address receives the same way. For the first 30 seconds a buy
-///    pays a total fee that starts at 99% and falls linearly to the normal fee; the extra goes to the platform
-///    treasury. The developer and up to six wallets fixed at deployment pay no extra fee (the same 2% cap). The launch
-///    buy (the pool's first swap, made by the Seeder for the developer) counts as the developer's; marked LAUNCH_BUY,
-///    its tokens reach the developer as plain tokens, with no slot (the launch deals no card).
-contract UN1Hook is IHooks, IUnlockCallback {
+///    created, buys go through the canonical Universal Router and each buyer (the router's msgSender, authenticated by
+///    the protection module) may buy at most 2% of supply in total; the token caps what each address receives the same
+///    way. For the first 30 seconds a buy pays a total fee that starts at 99% and falls linearly to the normal fee; the
+///    extra is minted to the opening-tax vault, payable only to the platform treasury. The developer and up to six
+///    wallets fixed in the module pay no opening tax (the same 2% limits). The launch buy (the pool's first swap, made by
+///    the Seeder for the developer) counts as the developer's; marked LAUNCH_BUY, its tokens reach the developer as
+///    plain tokens, with no slot (the launch deals no card).
+contract UN1Hook is IHooks {
     using PoolIdLibrary for PoolKey;
     using SafeCast for uint256;
 
@@ -56,11 +56,7 @@ contract UN1Hook is IHooks, IUnlockCallback {
     uint256 public constant HALVING_FEE = 21_000; // 2.10% in epoch 1
     uint256 public constant EPOCH = 2_100; // composes per epoch
     uint256 public constant PROTECTION = 5 minutes; // launch protection window, from pool creation
-    uint256 public constant OPENING_FEE_WINDOW = 30 seconds;
-    uint256 public constant OPENING_TOTAL_FEE = 990_000; // pips: 99% of a buy at the pool's first second
     uint256 public constant BUYER_LIMIT = 200 ether; // 2% of 10,000, per buyer over the protection window
-    /// @notice The canonical Universal Router (Uniswap, mainnet). During protection it is the only way to buy.
-    address public constant ROUTER = 0xd92A36B0000531EF3063dEd4De20A0783308446C;
     uint24 public constant LP_FEE = 0;
     int24 public constant TICK_SPACING = 60;
     address public constant PLATFORM_RECIPIENT = 0xD88539d3c4C460136a733A3Fd60cf6BF269079da;
@@ -76,16 +72,12 @@ contract UN1Hook is IHooks, IUnlockCallback {
     address public immutable devRecipient;
     /// @notice The graph deployer (the Programmable Graph Factory); it alone calls `initialize`, once.
     address public immutable deployer;
-    /// @notice The router's code when this hook was deployed (in the launch transaction): buys during protection must
-    ///         come from that exact code.
-    bytes32 public immutable routerCodeHash;
-    /// @dev Wallets exempt from the opening fee besides the developer (launch protection v1 allows six); 0 = unused.
-    address private immutable exempt0;
-    address private immutable exempt1;
-    address private immutable exempt2;
-    address private immutable exempt3;
-    address private immutable exempt4;
-    address private immutable exempt5;
+    /// @notice Normal fees (platform, developer, bounty, holders), each payable only to its recipient. CREATE child 1.
+    UN1FeeVault public immutable feeVault;
+    /// @notice Buyer authentication, opening tax and its exemptions. CREATE child 2.
+    UN1ProtectionModule public immutable protectionModule;
+    /// @notice Opening taxes, payable only to the platform treasury. CREATE child 3.
+    UN1OpeningTaxVault public immutable openingTaxVault;
 
     // ---------------- state ----------------
     // set once by `initialize` (they are deployed after the hook, which they reference)
@@ -94,13 +86,10 @@ contract UN1Hook is IHooks, IUnlockCallback {
     PoolId public poolId;
     uint40 public launchedAt;
     uint64 public swapCount;
-    mapping(address recipient => uint256 amount) public owed; // UNI claims held here for each recipient
     /// @notice Dev fee (UNI) paid by the buys whose slots target `round`: the most the beacon pays for revealing it.
     mapping(uint64 round => uint256 amount) public devFeeOf;
     /// @notice Tokens each buyer bought during the protection window (sells do not give room back).
     mapping(address buyer => uint256 amount) public boughtDuringProtection;
-    /// @notice UNI of opening fees, owed to the platform treasury on top of its 0.3% (included in `owed`).
-    uint256 public openingFeesCollected;
 
     uint256 private constant T_PIPS = uint256(keccak256("un1.hook.pips"));
     uint256 private constant T_NORMAL = uint256(keccak256("un1.hook.normal-pips"));
@@ -110,44 +99,32 @@ contract UN1Hook is IHooks, IUnlockCallback {
     error HookNotImplemented();
     error WrongPool();
     error PartialQuoteFill();
-    error UnsupportedRouter();
-    error InvalidBuyer();
     error BuyerLimitExceeded(address buyer, uint256 bought, uint256 limit);
-    error UnknownRecipient();
-    error NothingToCollect();
     error NotDeployer();
     error AlreadyInitialized();
     error NotInitialized();
     error BadBeacon();
-    error InvalidExemption();
 
     event FeeTaken(bool buy, uint256 gross, uint256 platform, uint256 dev, uint256 holders);
     event OpeningFeeTaken(address indexed buyer, uint256 gross, uint256 amount);
-    event Collected(address indexed recipient, uint256 amount);
 
     modifier onlyPoolManager() {
         if (msg.sender != address(poolManager)) revert NotPoolManager();
         _;
     }
 
-    /// @param exempt Wallets exempt from the opening fee besides the developer, as the reference module checks them:
-    ///        zero entries are unused; no duplicates; never the developer, the token, the PoolManager or the router.
+    /// @param exempt Wallets exempt from the opening tax besides the developer; the module checks them as the reference
+    ///        module does (zero entries are unused; no duplicates; never the developer, the hook, the token, the
+    ///        PoolManager or the router).
     constructor(IPoolManager poolManager_, address token_, address uni_, address devRecipient_, address[6] memory exempt) {
-        for (uint256 i; i < 6; ++i) {
-            address w = exempt[i];
-            if (w == address(0)) continue;
-            if (w == devRecipient_ || w == token_ || w == address(poolManager_) || w == ROUTER) revert InvalidExemption();
-            for (uint256 j; j < i; ++j) {
-                if (w == exempt[j]) revert InvalidExemption();
-            }
-        }
         poolManager = poolManager_;
         token = token_;
         uni = uni_;
         devRecipient = devRecipient_;
         deployer = msg.sender;
-        routerCodeHash = ROUTER.codehash;
-        (exempt0, exempt1, exempt2, exempt3, exempt4, exempt5) = (exempt[0], exempt[1], exempt[2], exempt[3], exempt[4], exempt[5]);
+        feeVault = new UN1FeeVault(poolManager_, uni_, devRecipient_);
+        protectionModule = new UN1ProtectionModule(token_, address(poolManager_), devRecipient_, exempt);
+        openingTaxVault = new UN1OpeningTaxVault(poolManager_, uni_);
         Hooks.validateHookPermissions(IHooks(address(this)), getHookPermissions());
     }
 
@@ -170,8 +147,8 @@ contract UN1Hook is IHooks, IUnlockCallback {
         });
     }
 
-    /// @notice Wire the fee recipients. Deployer only, once, before the pool exists. The beacon (public infrastructure
-    ///         deployed before the launch) must be bound to this hook's token.
+    /// @notice Wire the fee recipients, here and in the normal-fee vault. Deployer only, once, before the pool exists.
+    ///         The beacon (public infrastructure deployed before the launch) must be bound to this hook's token.
     function initialize(address distributor_, address beacon_) external {
         if (msg.sender != deployer) revert NotDeployer();
         if (distributor != address(0)) revert AlreadyInitialized();
@@ -179,6 +156,7 @@ contract UN1Hook is IHooks, IUnlockCallback {
         if (!ok || ret.length != 32 || abi.decode(ret, (uint256)) != uint160(token)) revert BadBeacon();
         distributor = distributor_;
         beacon = beacon_;
+        feeVault.bind(distributor_, beacon_);
     }
 
     // ================= views =================
@@ -216,24 +194,9 @@ contract UN1Hook is IHooks, IUnlockCallback {
         return launchedAt == 0 ? 0 : uint256(launchedAt) + PROTECTION;
     }
 
-    /// @notice The six wallet slots exempt from the opening fee besides the developer (0 = unused).
-    function exemptWallets() external view returns (address[6] memory) {
-        return [exempt0, exempt1, exempt2, exempt3, exempt4, exempt5];
-    }
-
-    /// @notice Whether `wallet` pays no opening fee: the developer and the exempt wallets.
-    function isExempt(address wallet) public view returns (bool) {
-        return wallet != address(0)
-            && (wallet == devRecipient || wallet == exempt0 || wallet == exempt1 || wallet == exempt2 || wallet == exempt3
-                || wallet == exempt4 || wallet == exempt5);
-    }
-
-    /// @notice Extra fee a buy by `buyer` pays now, in pips: (99% minus the normal fee) at the pool's first second,
-    ///         falling linearly to 0 over 30 seconds. The developer and the exempt wallets pay none.
+    /// @notice Opening tax a buy by `buyer` pays now, in pips (the protection module's rule; exempt wallets pay none).
     function openingFee(address buyer) public view returns (uint256) {
-        uint256 start = launchedAt;
-        if (start == 0 || block.timestamp >= start + OPENING_FEE_WINDOW || isExempt(buyer)) return 0;
-        return Math.mulDiv(OPENING_TOTAL_FEE - totalFee(), start + OPENING_FEE_WINDOW - block.timestamp, OPENING_FEE_WINDOW);
+        return protectionModule.openingTax(buyer, totalFee());
     }
 
     /// @notice Total fee of a buy by `buyer` now, in pips.
@@ -268,9 +231,10 @@ contract UN1Hook is IHooks, IUnlockCallback {
         uint256 normal = totalFee();
         uint256 pips = normal;
         if (_isBuy(params) && block.timestamp < uint256(launchedAt) + PROTECTION) {
-            address buyer = _buyer(sender);
+            // the pool's first swap is the launch buy, atomic with pool creation and required by the Seeder
+            address buyer = protectionModule.protectedBuyer(sender, swapCount == 0);
             _tstore(T_BUYER, uint160(buyer));
-            pips += openingFee(buyer);
+            pips += protectionModule.openingTax(buyer, normal);
         }
         _tstore(T_PIPS, pips);
         _tstore(T_NORMAL, normal);
@@ -378,30 +342,18 @@ contract UN1Hook is IHooks, IUnlockCallback {
         gross = exactIn ? requested : requested + fee;
     }
 
-    /// @dev Who is buying, during protection. The pool's first swap is the launch buy, atomic with pool creation and
-    ///      required by the Seeder: it counts as the developer's. Every other buy must come from the canonical router,
-    ///      which names its caller.
-    function _buyer(address sender) private view returns (address buyer) {
-        if (swapCount == 0) return devRecipient;
-        if (sender != ROUTER || sender.codehash != routerCodeHash) revert UnsupportedRouter();
-        buyer = IMsgSender(sender).msgSender();
-        if (buyer == address(0) || buyer == ROUTER || buyer == address(this) || buyer == address(poolManager)) {
-            revert InvalidBuyer();
-        }
-    }
-
-    /// @dev Keep the fee in the PoolManager as UNI claims owned by this hook, so a swap never depends on a recipient.
-    ///      An opening fee is the part above the normal fee of the same gross amount: it goes to the platform treasury,
-    ///      and the normal fee is split as usual.
+    /// @dev Mint the fee as UNI claims to the vaults, so a swap never depends on a recipient. An opening tax is the part
+    ///      above the normal fee of the same gross amount: it goes to the opening-tax vault (platform treasury only), and
+    ///      the normal fee is split as usual into the normal-fee vault's ledgers.
     function _accrue(bool buy, uint256 gross, uint256 fee) private {
         if (fee == 0) return;
         uint256 normal = _tload(T_NORMAL);
+        uint256 id = uint256(uint160(uni));
         if (_tload(T_PIPS) > normal) {
             uint256 normalFee = Math.min(fee, Math.mulDiv(gross, normal, FeeMath.ONE));
             uint256 extra = fee - normalFee;
-            poolManager.mint(address(this), uint256(uint160(uni)), extra);
-            owed[PLATFORM_RECIPIENT] += extra;
-            openingFeesCollected += extra;
+            poolManager.mint(address(openingTaxVault), id, extra);
+            openingTaxVault.recordTax(extra);
             emit OpeningFeeTaken(address(uint160(_tload(T_BUYER))), gross, extra);
             fee = normalFee;
             if (fee == 0) return;
@@ -410,38 +362,16 @@ contract UN1Hook is IHooks, IUnlockCallback {
         uint256 dev = FeeMath.share(gross, fee - platform, DEV_FEE);
         uint256 holders = fee - platform - dev;
         if (buy) devFeeOf[DrandRound.target(block.timestamp)] += dev; // the round the token targets for this buy
-        poolManager.mint(address(this), uint256(uint160(uni)), fee);
-        owed[PLATFORM_RECIPIENT] += platform;
-        // the reserve is what the beacon can still collect plus the UNI it already holds
-        uint256 reserve = owed[beacon] + IBalanceOf(uni).balanceOf(beacon);
+        // the reserve is what the beacon can still claim plus the UNI it already holds
+        uint256 reserve = feeVault.bountyAccrued() + IBalanceOf(uni).balanceOf(beacon);
+        uint256 topUp;
         if (reserve < BOUNTY_RESERVE) {
-            uint256 topUp = BOUNTY_RESERVE - reserve;
+            topUp = BOUNTY_RESERVE - reserve;
             if (topUp > dev) topUp = dev;
-            owed[beacon] += topUp;
-            dev -= topUp;
         }
-        owed[devRecipient] += dev;
-        owed[distributor] += holders;
-        emit FeeTaken(buy, gross, platform, dev, holders);
-    }
-
-    /// @notice Pay out everything accrued for `recipient` (platform, dev, distributor or beacon) as UNI. Anyone can call.
-    function collect(address recipient) external {
-        if (recipient != PLATFORM_RECIPIENT && recipient != devRecipient && recipient != distributor && recipient != beacon) {
-            revert UnknownRecipient();
-        }
-        uint256 amount = owed[recipient];
-        if (amount == 0) revert NothingToCollect();
-        owed[recipient] = 0;
-        poolManager.unlock(abi.encode(recipient, amount));
-    }
-
-    function unlockCallback(bytes calldata data) external onlyPoolManager returns (bytes memory) {
-        (address recipient, uint256 amount) = abi.decode(data, (address, uint256));
-        poolManager.burn(address(this), uint256(uint160(uni)), amount);
-        poolManager.take(Currency.wrap(uni), recipient, amount);
-        emit Collected(recipient, amount);
-        return "";
+        poolManager.mint(address(feeVault), id, fee);
+        feeVault.recordFees(platform, dev - topUp, topUp, holders);
+        emit FeeTaken(buy, gross, platform, dev - topUp, holders);
     }
 
     // ================= helpers =================

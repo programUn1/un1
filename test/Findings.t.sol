@@ -3,6 +3,10 @@ pragma solidity 0.8.26;
 
 import {UN1Token} from "../src/UN1Token.sol";
 import {Base} from "./utils/Base.sol";
+import {UN1Hook} from "../src/UN1Hook.sol";
+import {Fees} from "./utils/Fees.sol";
+
+using Fees for UN1Hook;
 
 /// @notice Findings of the 2026-10-15 code review, one group of cases each:
 ///  fixed ones (K-1 work guard, K-2 draw credit, K-5 revoke, K-7 readable and clearable sell order, G-1 bounded walk) assert the fixed behavior;

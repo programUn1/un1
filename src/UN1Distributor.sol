@@ -19,15 +19,20 @@ interface IUN1TokenRewards {
     function earned(address account) external view returns (uint256);
 }
 
+interface IUN1HolderVault {
+    function claimHolders() external returns (uint256);
+}
+
 interface IUN1HookView {
-    function collect(address recipient) external;
+    function feeVault() external view returns (IUN1HolderVault);
     function poolKey() external view returns (PoolKey memory);
     function quoteIsCurrency0() external view returns (bool);
 }
 
 /// @title UN1Distributor
-/// @notice Holds the halving fee in UNI. `sync` pulls it from the hook and splits every new deposit 7/8 to the holders
-///  (streamed over one day by the token's accumulator) and 1/8 to the permanent-liquidity reserve. No owner.
+/// @notice Holds the halving fee in UNI. `sync` pulls it from the hook's normal-fee vault and splits every new deposit
+///  7/8 to the holders (streamed over one day by the token's accumulator) and 1/8 to the permanent-liquidity reserve.
+///  No owner.
 ///  - `claim` pays the caller; `claimFor` pays each listed account to itself (the weekly push)
 ///  - `deployReserve` turns the reserve into permanent bids: UNI-only liquidity in a band 6%–45% below the token's
 ///    price, never removable (this contract has no way to remove liquidity). No swap is involved, so there is nothing
@@ -73,9 +78,9 @@ contract UN1Distributor is IUnlockCallback {
 
     // ================= fees in, holders out =================
 
-    /// @notice Pull the holders' fee from the hook and start streaming 7/8 of everything new.
+    /// @notice Pull the holders' fee from the hook's normal-fee vault and start streaming 7/8 of everything new.
     function sync() external returns (uint256 holders, uint256 toReserve) {
-        try hook.collect(address(this)) {} catch {}
+        try hook.feeVault().claimHolders() {} catch {}
         uint256 committed = totalFunded - totalClaimed + reserve;
         uint256 bal = uni.balanceOf(address(this));
         if (bal <= committed) return (0, 0);

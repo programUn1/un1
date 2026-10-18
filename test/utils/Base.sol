@@ -73,6 +73,7 @@ abstract contract Base is Deployers {
         token = new UN1Token(address(manager), masks);
         require(address(token) == predicted, "predicted token address");
         address hookAddr = address(FLAGS | (uint160(0x4444) << 144));
+        vm.setNonce(hookAddr, 1); // a new contract starts at nonce 1 (EIP-161): its CREATE children are the real ones
         deployCodeTo("UN1Hook.sol:UN1Hook", abi.encode(manager, address(token), address(uni), DEV, _exempt()), hookAddr);
         hook = UN1Hook(hookAddr);
         distributor = new UN1Distributor(address(uni), address(token), hookAddr, address(manager));

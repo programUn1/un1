@@ -6,8 +6,12 @@ import {Hooks} from "@uniswap/v4-core/src/libraries/Hooks.sol";
 import {CustomRevert} from "@uniswap/v4-core/src/libraries/CustomRevert.sol";
 import {UN1Token} from "../src/UN1Token.sol";
 import {UN1Hook} from "../src/UN1Hook.sol";
+import {UN1ProtectionModule} from "../src/UN1ProtectionModule.sol";
 import {FeeMath} from "../src/libraries/FeeMath.sol";
 import {Base} from "./utils/Base.sol";
+import {Fees} from "./utils/Fees.sol";
+
+using Fees for UN1Hook;
 
 /// @notice Programmable launch protection v1, applied to the UNI-quoted pool (docs/01-SPEC.md, 06-PREFLIGHT P-14):
 ///  - 5 minutes from pool creation; buys only through the canonical Universal Router, which names the buyer
@@ -42,8 +46,8 @@ contract LaunchProtectionTest is Base {
     function test_protection_startsWithThePool() public view {
         assertEq(hook.protectionEndsAt(), start + 5 minutes);
         assertEq(token.protectedUntil(), start + 5 minutes);
-        assertEq(hook.routerCodeHash(), address(router).codehash, "the router's code at deployment");
-        assertEq(address(router), hook.ROUTER());
+        assertEq(hook.protectionModule().routerCodeHash(), address(router).codehash, "the router's code at deployment");
+        assertEq(address(router), hook.protectionModule().ROUTER());
     }
 
     function test_protection_cannotBeRestarted() public {
@@ -74,7 +78,7 @@ contract LaunchProtectionTest is Base {
     function test_buys_onlyThroughTheCanonicalRouter_duringProtection() public {
         _launchBuy(1 ether);
         vm.warp(start + 31);
-        vm.expectRevert(_hookError(IHooks.beforeSwap.selector, abi.encodeWithSelector(UN1Hook.UnsupportedRouter.selector)));
+        vm.expectRevert(_hookError(IHooks.beforeSwap.selector, abi.encodeWithSelector(UN1ProtectionModule.UnsupportedRouter.selector)));
         _buy(alice, 1 ether); // PoolSwapTest is not the canonical router
 
         _routerBuy(alice, 5 ether);

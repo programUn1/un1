@@ -14,6 +14,9 @@ import {FeeMath} from "../../src/libraries/FeeMath.sol";
 import {Base} from "../utils/Base.sol";
 import {Test} from "forge-std/Test.sol";
 import {noExempt} from "../utils/Exempt.sol";
+import {Fees} from "../utils/Fees.sol";
+
+using Fees for UN1Hook;
 
 /// @notice Normal swaps against the real local PoolManager, with both possible currency orders.
 ///         No RPC, storage edits, production changes, or transaction broadcasting is used.
@@ -67,7 +70,8 @@ abstract contract ReviewFeeOrdersBase is Base {
     }
 
     function _claims() private view returns (uint256) {
-        return manager.balanceOf(address(hook), uint256(uint160(address(uni))));
+        uint256 id = uint256(uint160(address(uni)));
+        return manager.balanceOf(address(hook.feeVault()), id) + manager.balanceOf(address(hook.openingTaxVault()), id);
     }
 
     function _checkAccounting(Balances memory before_, uint256 gross, uint256 fee) private view {

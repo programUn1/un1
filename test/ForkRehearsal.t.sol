@@ -15,6 +15,9 @@ import {UN1Hook} from "../src/UN1Hook.sol";
 import {UN1Beacon} from "../src/UN1Beacon.sol";
 import {UN1Seeder} from "../src/UN1Seeder.sol";
 import {noExempt} from "./utils/Exempt.sol";
+import {Fees} from "./utils/Fees.sol";
+
+using Fees for UN1Hook;
 
 /// @dev Stand-in for the Programmable Graph Factory: CREATE2 deployer and initializer caller. Every UN1 constructor
 ///  records msg.sender as its deployer, so only this contract can run the initializers, exactly as in the real graph.
@@ -133,6 +136,12 @@ abstract contract ForkGraph is Test {
     bytes32 constant INFRA_SALT = keccak256("UN1.infrastructure.v1");
 
     bool forked;
+    /// @dev The launch transaction without the router must stay under this. The router's own cost in the 28 finalized
+    ///      Ethereum Custom Launches (top-level gas minus the factory frame, intrinsic gas and calldata, read with
+    ///      debug_traceTransaction) was 0.61 - 1.05 million gas: with the largest, this leaves about 0.2 million under the
+    ///      EIP-7825 cap of 16,777,216. Gas-report runs (isolation: every call as its own transaction) measure about one
+    ///      million more than the real transaction and stay under it too.
+    uint256 constant LAUNCH_GAS_BUDGET = 15_500_000;
     address alice = makeAddr("alice");
 
     struct Graph {
@@ -191,9 +200,10 @@ abstract contract ForkGraph is Test {
         require(ok && ret.length == 20 && address(bytes20(ret)) == a, "infrastructure deployment failed");
     }
 
-    /// @dev Pre-launch: the four public infrastructure contracts (separate transactions, referenced by address; the
-    ///      beacon is bound to the token's predicted address). Launch: the five graph targets in topological order,
-    ///      then the initializers.
+    /// @dev Pre-launch: the five public infrastructure contracts (separate transactions, referenced by address; the
+    ///      beacon and the mirror are bound to the token's predicted address). Launch: the four graph targets in
+    ///      topological order (the hook creates its fee vault, protection module and opening-tax vault), then the
+    ///      initializers.
     function _deployGraph(bool tokenBelowUni, uint256 seed) internal returns (Graph memory g) {
         (g.masks,) = _infra(_code("UN1MasksData.sol:UN1MasksData", ""));
         (g.parts,) = _infra(_code("UN1PartsData.sol:UN1PartsData", ""));
@@ -201,7 +211,9 @@ abstract contract ForkGraph is Test {
         g.factory = new GraphFactoryRehearsal();
         bytes memory tokenCode = _code("UN1Token.sol:UN1Token", abi.encode(PM, g.masks));
         bytes32 tokenSalt = g.factory.grindBelow(tokenCode, UNI, tokenBelowUni, seed << 32);
-        (g.beacon,) = _infra(_code("UN1Beacon.sol:UN1Beacon", abi.encode(g.factory.predict(tokenCode, tokenSalt), UNI)));
+        address predictedToken = g.factory.predict(tokenCode, tokenSalt);
+        (g.beacon,) = _infra(_code("UN1Beacon.sol:UN1Beacon", abi.encode(predictedToken, UNI)));
+        (g.mirror,) = _infra(_code("UN1Mirror.sol:UN1Mirror", abi.encode(predictedToken, g.renderer)));
         launchGas = 0;
         g.token = UN1Token(_deploy(g.factory, tokenCode, tokenSalt));
         bytes memory hookCode = _code("UN1Hook.sol:UN1Hook", abi.encode(PM, address(g.token), UNI, DEV, noExempt()));
@@ -209,7 +221,6 @@ abstract contract ForkGraph is Test {
         g.hook = UN1Hook(_deploy(g.factory, hookCode, hookSalt));
         g.distributor =
             _deploy(g.factory, _code("UN1Distributor.sol:UN1Distributor", abi.encode(UNI, address(g.token), address(g.hook), PM)), bytes32(seed));
-        g.mirror = _deploy(g.factory, _code("UN1Mirror.sol:UN1Mirror", abi.encode(address(g.token), g.renderer)), bytes32(seed));
         g.seeder = UN1Seeder(
             payable(_deploy(g.factory, _code("UN1Seeder.sol:UN1Seeder", abi.encode(PM, UNI, DEV, address(g.token), address(g.hook))), bytes32(seed)))
         );
@@ -232,9 +243,9 @@ abstract contract ForkGraph is Test {
         uint256 used = g0 - gasleft();
         emit log_named_uint("ignite gas", used);
         launchGas += used + _calldataGas(igniteCall) + 21_000;
-        emit log_named_uint("launch transaction gas (5 deployments + initializers + ignite + calldata)", launchGas);
+        emit log_named_uint("launch transaction gas (4 deployments + initializers + ignite + calldata)", launchGas);
         // EIP-7825 caps one transaction at 2^24 = 16,777,216 gas; keep room for the Router's permit and stamping
-        assertLe(launchGas, 15_000_000, "launch fits under the EIP-7825 per-transaction cap with margin");
+        assertLe(launchGas, LAUNCH_GAS_BUDGET, "launch fits under the EIP-7825 per-transaction cap with room for the router");
         r = abi.decode(ret, (UN1Seeder.Result));
     }
 
@@ -376,13 +387,14 @@ contract ForkRehearsalTest is ForkGraph {
         assertEq(vm.parseJsonAddress(json, ".deployer"), CREATE2_PROXY);
         assertEq(vm.parseJsonBytes32(json, ".salt"), INFRA_SALT);
         address token = vm.parseJsonAddress(json, ".tokenPrediction.address");
-        address[4] memory a;
-        uint256[4] memory gasUsed;
+        address[5] memory a;
+        uint256[5] memory gasUsed;
         (a[0], gasUsed[0]) = _infra(_code("UN1MasksData.sol:UN1MasksData", ""));
         (a[1], gasUsed[1]) = _infra(_code("UN1PartsData.sol:UN1PartsData", ""));
         (a[2], gasUsed[2]) = _infra(_code("UN1Renderer.sol:UN1Renderer", abi.encode(a[1])));
         (a[3], gasUsed[3]) = _infra(_code("UN1Beacon.sol:UN1Beacon", abi.encode(token, UNI)));
-        for (uint256 i; i < 4; ++i) _checkInfraEntry(json, i, a[i], gasUsed[i]);
+        (a[4], gasUsed[4]) = _infra(_code("UN1Mirror.sol:UN1Mirror", abi.encode(token, a[2])));
+        for (uint256 i; i < 5; ++i) _checkInfraEntry(json, i, a[i], gasUsed[i]);
         (address masks, address parts, address renderer, address beacon) = (a[0], a[1], a[2], a[3]);
         // a second deployment of the same code is refused by CREATE2 (the proxy reverts) instead of producing a different
         // address; a collision burns the gas it was given, so cap it
@@ -394,6 +406,10 @@ contract ForkRehearsalTest is ForkGraph {
         assertEq(abi.decode(p0, (address)), parts);
         assertEq(address(UN1Beacon(beacon).token()), token, "the beacon is bound to the predicted token");
         assertEq(address(UN1Beacon(beacon).uni()), UNI);
+        (, bytes memory t4) = a[4].staticcall(abi.encodeWithSignature("token()"));
+        assertEq(abi.decode(t4, (address)), token, "the mirror is bound to the predicted token");
+        (, bytes memory r4) = a[4].staticcall(abi.encodeWithSignature("renderer()"));
+        assertEq(abi.decode(r4, (address)), renderer);
     }
 
     /// @dev launch/make_config.py predicts the token's address the way the CLI does (launch/cli_predict.py, from the
@@ -417,6 +433,37 @@ contract ForkRehearsalTest is ForkGraph {
         address token = vm.computeCreate2Address(salt, codeHash, address(FACTORY));
         assertEq(token, vm.parseJsonAddress(json, ".tokenPrediction.address"));
         assertEq(token.code.length, 0, "nothing deployed there yet");
+    }
+
+    /// @dev The hook's address the way the CLI finds it (permission grind over the init code that carries the predicted
+    ///      token), checked with the real factory's salt formula, and its three CREATE children, whose addresses are the
+    ///      hook's immutable literals in the launch config.
+    function test_launchBuild_hookPredictionMatchesTheFactory() public onlyFork {
+        string memory json = vm.readFile("launch-build/infrastructure.json");
+        IGraphDeployer.GraphAuthorization memory auth;
+        auth.routeNamespace = vm.parseJsonBytes32(json, ".hookPrediction.routeNamespace");
+        auth.routeNonce = vm.parseJsonBytes32(json, ".hookPrediction.nonce");
+        auth.authorizedLauncher = vm.parseJsonAddress(json, ".hookPrediction.router");
+        assertEq(auth.routeNamespace, vm.parseJsonBytes32(json, ".tokenPrediction.routeNamespace"), "one route for the graph");
+        bytes32 idHash = _targetIdHash("un1-hook");
+        assertEq(idHash, vm.parseJsonBytes32(json, ".hookPrediction.targetIdHash"));
+        bytes32 salt = FACTORY.effectiveTargetSalt(auth, idHash, vm.parseJsonBytes32(json, ".hookPrediction.applicantSalt"));
+        assertEq(salt, vm.parseJsonBytes32(json, ".hookPrediction.effectiveSalt"), "the factory's own salt formula");
+        address token = vm.parseJsonAddress(json, ".tokenPrediction.address");
+        assertEq(vm.parseJsonAddress(json, ".hookPrediction.constructorArguments[1]"), token, "the hook is built for the token");
+        address[6] memory exempt;
+        for (uint256 i; i < 6; ++i) {
+            exempt[i] = vm.parseJsonAddress(json, string.concat(".hookPrediction.constructorArguments[4][", vm.toString(i), "]"));
+        }
+        address dev = vm.parseJsonAddress(json, ".hookPrediction.constructorArguments[3]");
+        bytes32 codeHash = keccak256(_code("UN1Hook.sol:UN1Hook", abi.encode(PM, token, UNI, dev, exempt)));
+        assertEq(codeHash, vm.parseJsonBytes32(json, ".hookPrediction.initCodeHash"), "hook init code = this build");
+        address hook = vm.computeCreate2Address(salt, codeHash, address(FACTORY));
+        assertEq(hook, vm.parseJsonAddress(json, ".hookPrediction.address"));
+        assertEq(uint160(hook) & 0x3fff, HOOK_MASK, "permission bits");
+        assertEq(vm.parseJsonAddress(json, ".hookPrediction.children.feeVault"), vm.computeCreateAddress(hook, 1));
+        assertEq(vm.parseJsonAddress(json, ".hookPrediction.children.protectionModule"), vm.computeCreateAddress(hook, 2));
+        assertEq(vm.parseJsonAddress(json, ".hookPrediction.children.openingTaxVault"), vm.computeCreateAddress(hook, 3));
     }
 
     // ---------------- the real Programmable Graph Factory ----------------
@@ -507,30 +554,30 @@ contract ForkRehearsalTest is ForkGraph {
             authorizedLauncher: address(this),
             totalValue: devEth
         });
-        IGraphDeployer.Target[] memory t = new IGraphDeployer.Target[](5);
+        IGraphDeployer.Target[] memory t = new IGraphDeployer.Target[](4);
         address a;
         t[0].targetIdHash = _targetIdHash("un1-token");
         t[0].initCode = _code("UN1Token.sol:UN1Token", abi.encode(PM, g.masks));
         g.token = UN1Token(_grind(auth, t[0], 0, tokenBelowUni));
-        // pre-launch: the beacon, bound to the token's predicted address
+        // pre-launch: the beacon and the mirror, bound to the token's predicted address
         (g.beacon,) = _infra(_code("UN1Beacon.sol:UN1Beacon", abi.encode(boundTo == address(0) ? address(g.token) : boundTo, UNI)));
+        (g.mirror,) = _infra(_code("UN1Mirror.sol:UN1Mirror", abi.encode(address(g.token), g.renderer)));
         t[1].targetIdHash = _targetIdHash("un1-hook");
         t[1].initCode = _code("UN1Hook.sol:UN1Hook", abi.encode(PM, address(g.token), UNI, DEV, noExempt()));
         g.hook = UN1Hook(_grind(auth, t[1], 1, false));
         (t[2], g.distributor) =
             _target(auth, "un1-distributor", _code("UN1Distributor.sol:UN1Distributor", abi.encode(UNI, address(g.token), address(g.hook), PM)), 4);
-        (t[3], g.mirror) = _target(auth, "un1-mirror", _code("UN1Mirror.sol:UN1Mirror", abi.encode(address(g.token), g.renderer)), 5);
-        (t[4], a) = _target(auth, "un1-seeder", _code("UN1Seeder.sol:UN1Seeder", abi.encode(PM, UNI, DEV, address(g.token), address(g.hook))), 6);
+        (t[3], a) = _target(auth, "un1-seeder", _code("UN1Seeder.sol:UN1Seeder", abi.encode(PM, UNI, DEV, address(g.token), address(g.hook))), 6);
         g.seeder = UN1Seeder(payable(a));
         t[0].initializerCalldata = abi.encodeCall(UN1Token.initialize, (address(g.hook), g.mirror, g.beacon, g.distributor, address(g.seeder)));
         t[1].initializerCalldata = abi.encodeCall(UN1Hook.initialize, (g.distributor, g.beacon));
-        t[4].initializerCalldata = abi.encodeCall(
+        t[3].initializerCalldata = abi.encodeCall(
             UN1Seeder.ignite,
             (
                 _igniteParams()
             )
         );
-        t[4].initializerValue = devEth;
+        t[3].initializerValue = devEth;
         // the salt formula used for the predictions above is the factory's own
         bytes32 effective = FACTORY.effectiveTargetSalt(auth, t[0].targetIdHash, t[0].applicantSalt);
         assertEq(vm.computeCreate2Address(effective, keccak256(t[0].initCode), address(FACTORY)), address(g.token), "salt formula");
@@ -557,14 +604,14 @@ contract ForkRehearsalTest is ForkGraph {
     function test_realFactory_launch_tokenAboveUni_devBuy() public onlyFork {
         (Graph memory g, uint256 txGas) = _realLaunch(false, 0.2 ether);
         assertEq(g.token.deployer(), address(FACTORY), "the real factory is msg.sender in constructors and initializers");
-        assertLe(txGas, 15_000_000, "launch fits under the EIP-7825 per-transaction cap with room for the router");
+        assertLe(txGas, LAUNCH_GAS_BUDGET, "launch fits under the EIP-7825 per-transaction cap with room for the router");
         _afterLaunch(g, false, 0.2 ether);
     }
 
     function test_realFactory_launch_tokenBelowUni_smallDevBuy() public onlyFork {
         (Graph memory g, uint256 txGas) = _realLaunch(true, 0.05 ether);
         assertEq(g.token.deployer(), address(FACTORY));
-        assertLe(txGas, 15_000_000);
+        assertLe(txGas, LAUNCH_GAS_BUDGET);
         _afterLaunch(g, true, 0.05 ether);
     }
 

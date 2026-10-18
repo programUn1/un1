@@ -21,6 +21,9 @@ import {UN1Seeder} from "../src/UN1Seeder.sol";
 import {UN1MasksData} from "../src/data/UN1MasksData.sol";
 import {UN1PartsData} from "../src/data/UN1PartsData.sol";
 import {noExempt} from "./utils/Exempt.sol";
+import {Fees} from "./utils/Fees.sol";
+
+using Fees for UN1Hook;
 
 interface IUniversalRouter {
     function execute(bytes calldata commands, bytes[] calldata inputs, uint256 deadline) external payable;
