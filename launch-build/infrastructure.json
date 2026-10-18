@@ -41,44 +41,44 @@
   {
    "name": "beacon",
    "contract": "src/UN1Beacon.sol:UN1Beacon",
-   "address": "0xc3647c83679Ae638f26CadF5f22bac852E611375",
+   "address": "0xcAfe5264de62c9a33e21A7005978B4A022863D5B",
    "constructorArguments": [
-    "0x3158923E41b6242c772d72eFFF863C508BB14D4c",
+    "0x03eDbAB5C3A0456567d61ab7F34f3b7e490EF512",
     "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
    ],
    "initCodeBytes": 7000,
-   "initCodeHash": "0x3b35f0b37417d3493f76387dd6dbd7c9e3241012d559925bec77fcf91bf6dd3e",
+   "initCodeHash": "0x20b42940cc22f89789a23ddd4ee61eb91bb0c58ccc35e5ba4832f36242a1bf23",
    "runtimeBytes": 6726,
-   "runtimeCodeHash": "0x2e2ed5e36cd75202b1c2144aeabf43174ca7df13ae0b7d0ccbbbaed145fdfa83",
+   "runtimeCodeHash": "0xa38fb711fe9374174dc8e73b6340a896bbf41be6ea5a20954c447ae74745df40",
    "calldata": "launch-build/infra/beacon.calldata.hex"
   },
   {
    "name": "mirror",
    "contract": "src/UN1Mirror.sol:UN1Mirror",
-   "address": "0x31Cb0df4a0E312faB5AC80D8d1911Cb0F2489158",
+   "address": "0x60bdc220A8c7E0c13B3439281742d81ff7bAff4B",
    "constructorArguments": [
-    "0x3158923E41b6242c772d72eFFF863C508BB14D4c",
+    "0x03eDbAB5C3A0456567d61ab7F34f3b7e490EF512",
     "0xFe7a28d87Aae6a519d1f52960CE8744bD408361F"
    ],
    "initCodeBytes": 4533,
-   "initCodeHash": "0x647018def49bbd283530942bca04c5ab217ac9ab2efc55dfebc0e439b928678a",
+   "initCodeHash": "0x6dba8a595219d6622287ff82f6aed3273fbb4286b001dd117617d41bacfce478",
    "runtimeBytes": 4238,
-   "runtimeCodeHash": "0x3c3a041b7b3f76b0736bc82ef47ea0b98c62cef50902d8529592f248f48cd7f4",
+   "runtimeCodeHash": "0x5b7e65ca1a2d8cb4f10b3e2c3d3eef5f106758418481bf6978f4135dbacf3a84",
    "calldata": "launch-build/infra/mirror.calldata.hex"
   }
  ],
  "tokenPrediction": {
   "targetId": "un1-token",
-  "address": "0x3158923E41b6242c772d72eFFF863C508BB14D4c",
+  "address": "0x03eDbAB5C3A0456567d61ab7F34f3b7e490EF512",
   "graphFactory": "0xB012e4A8F2c5FC4E8E4faCA9D5Ad6FfF13FBA887",
   "router": "0xBE4bF6Ac8c6F012E1C8f25747A9fBccB2FDAC4C3",
   "launchWallet": "0x722FEad20748DEdB2AB2AE22DfCe77971B394043",
-  "nonce": "0x0dab0f535f09776465dbef4f72f2df54c2345cc9bef120b6b5f2be08f0cb898c",
+  "nonce": "0x9c4b4bc52d2d100b8a49c1aa18a77e134521dcdead9e91fb0ce5dc6d1e2de751",
   "sourceBundleSha256": "sha256:02a21bcca9dd485d43162e96401a7fa1c1ecb2b8d7692f3d77dd9fd23abf67e5",
   "routeNamespace": "0x13117820879bcd421864e71e25def8dbe47b1ff52c05eabad7ded1a07ba80879",
   "targetIdHash": "0x90fc76286a450a790b881f683d6fe3036c74b4c5280a5eab8cf6d9f7369bd028",
   "applicantSalt": "0x0000000000000000000000000000000000000000000000000000000000000001",
-  "effectiveSalt": "0xbe4a52f5471a291588df0f63142e1b1e4f0751cddb7a8af24228ec0aabdc63cc",
+  "effectiveSalt": "0x7c73c07adaa26853d02f4bc186eece8fdfd1219741c9c617a1572cb2294f48b4",
   "initCodeHash": "0x3f5f7d21747becd724ee572c3231744f560bb1e959b569d934218d259ede1919",
   "bundleFiles": [
    {
@@ -201,20 +201,20 @@
  },
  "hookPrediction": {
   "targetId": "un1-hook",
-  "address": "0xFA673b06dCde76c255f8Cf10d3dF1C83d52Ce5cC",
+  "address": "0xBe3ee88690D4C4999fff908d151823715B6325CC",
   "graphFactory": "0xB012e4A8F2c5FC4E8E4faCA9D5Ad6FfF13FBA887",
   "router": "0xBE4bF6Ac8c6F012E1C8f25747A9fBccB2FDAC4C3",
   "launchWallet": "0x722FEad20748DEdB2AB2AE22DfCe77971B394043",
-  "nonce": "0x0dab0f535f09776465dbef4f72f2df54c2345cc9bef120b6b5f2be08f0cb898c",
+  "nonce": "0x9c4b4bc52d2d100b8a49c1aa18a77e134521dcdead9e91fb0ce5dc6d1e2de751",
   "sourceBundleSha256": "sha256:02a21bcca9dd485d43162e96401a7fa1c1ecb2b8d7692f3d77dd9fd23abf67e5",
   "routeNamespace": "0x13117820879bcd421864e71e25def8dbe47b1ff52c05eabad7ded1a07ba80879",
   "targetIdHash": "0x8c0d5ed7cb703e5449f1251d5afc590c45cb52b27c036ed60be18aad359d20d9",
-  "applicantSalt": "0x0000000000000000000000000000000000000000000000000000000000003935",
-  "effectiveSalt": "0xaeb4c951338da4d7a6e5995ac60a4fe1d5efe56b8463f3bb335aeaa9dc1120dd",
-  "initCodeHash": "0xe9ee0499fab8e7636a5623e5cc2d48b85344b162d0784eab1685ab69f6f2f861",
+  "applicantSalt": "0x000000000000000000000000000000000000000000000000000000000000255b",
+  "effectiveSalt": "0x678a4941ea98f41425334e5602f94bb2e5d9d462847752693d85831d2e2ab329",
+  "initCodeHash": "0x8ab54da6b831fb5bd7825b26d339f25673b2776f6433333d19da68bd73e5d72c",
   "constructorArguments": [
    "0x000000000004444c5dc75cB358380D2e3dE08A90",
-   "0x3158923E41b6242c772d72eFFF863C508BB14D4c",
+   "0x03eDbAB5C3A0456567d61ab7F34f3b7e490EF512",
    "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
    "0x722FEad20748DEdB2AB2AE22DfCe77971B394043",
    [
@@ -227,9 +227,9 @@
    ]
   ],
   "children": {
-   "feeVault": "0x5DcE9EA8d40A69e264DF12881532E47f1f35C223",
-   "protectionModule": "0x2B5Ac0A8E54295053A9BBCF2920A428c44ecBF03",
-   "openingTaxVault": "0x2d1bC455Fad78bA49b02FAd6869A0891F512D82c"
+   "feeVault": "0x1563AD60cAE95EE5Ac7e286f7c83B25bc54441Cb",
+   "protectionModule": "0xbF32d080580Bac260718D5f1C4952eE0a823b3D1",
+   "openingTaxVault": "0xeb251F303c24D70e84827D9D3Cfcb9138eF8EAd3"
   }
  }
 }

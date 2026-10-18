@@ -40,14 +40,17 @@ Deployed through the deterministic CREATE2 proxy `0x4e59b44847b379578588920cA78F
 | UN1MasksData | `0x2f9A3fD93E36809bAFD847A29b5E6C0DBdeA4B4A` | `0x67082b6fd14aa4c0f6a9441fd62e44ef41e345a58cc9c59ebbdc903c5a856003` |
 | UN1PartsData | `0x94b5de3277b44959B2e5A9F0dD834209203b95D2` | `0xc186c9651e8f0b676600566fa63429abf8cfd92808192732d1065eeac0fc6439` |
 | UN1Renderer | `0xFe7a28d87Aae6a519d1f52960CE8744bD408361F` | `0xfcef653b04f9cd0a9e10e4ad2fa40938872f66748fa6c1b770cbd3408015acbe` |
-| UN1Beacon | `0xc3647c83679Ae638f26CadF5f22bac852E611375` (bound to the predicted token) | `0x4caa33057c5178a195daece79483bb39e95c523a6fa681c6c38425f93b06fbc9` |
-| UN1Mirror | `0x31Cb0df4a0E312faB5AC80D8d1911Cb0F2489158` (bound to the predicted token) | `0x6075f2242eaf522be0feb21d8139cbc36202a8494e7d69c96b87957115c5ddd9` |
+| UN1Beacon | `0xcAfe5264de62c9a33e21A7005978B4A022863D5B` (bound to the predicted token) | `0x52755270c40b178d4e10c1b0c014ea103189fbc023f09e5678805967af729c6e` |
+| UN1Mirror | `0x60bdc220A8c7E0c13B3439281742d81ff7bAff4B` (bound to the predicted token) | `0xabcdef4e1df79c265ddf25cbb91324f14380e6b86fc07bd566b22d4c2a372256` |
 
-Predicted for this bundle: token `0x3158923E41b6242c772d72eFFF863C508BB14D4c`, hook `0xFA673b06dCde76c255f8Cf10d3dF1C83d52Ce5cC` (applicant salt 14645), and the hook's
-children `UN1FeeVault` `0x5DcE9EA8d40A69e264DF12881532E47f1f35C223`, `UN1ProtectionModule` `0x2B5Ac0A8E54295053A9BBCF2920A428c44ecBF03`,
-`UN1OpeningTaxVault` `0x2d1bC455Fad78bA49b02FAd6869A0891F512D82c`.
+Predicted for this request (with a fresh nonce: the first request's nonce cannot be reused): token
+`0x03eDbAB5C3A0456567d61ab7F34f3b7e490EF512`, hook `0xBe3ee88690D4C4999fff908d151823715B6325CC` (applicant salt 9563), and
+the hook's children `UN1FeeVault`
+`0x1563AD60cAE95EE5Ac7e286f7c83B25bc54441Cb`, `UN1ProtectionModule` `0xbF32d080580Bac260718D5f1C4952eE0a823b3D1`,
+`UN1OpeningTaxVault` `0xeb251F303c24D70e84827D9D3Cfcb9138eF8EAd3`.
 
-The beacon deployed for the first submission (`0xe9A1…8937`) is bound to that bundle's token and is not used.
+The beacon deployed for the first submission (`0xe9A1…8937`) is bound to that request's token and is not used, nor are a
+beacon and a mirror deployed for this bundle under the first nonce (`0xc364…1375`, `0x31Cb…9158`).
 
 ## Launch protection v1 on a UNI-quoted pool
 
