@@ -1,0 +1,180 @@
+{
+ "deployer": "0x4e59b44847b379578588920cA78FbF26c0B4956C",
+ "salt": "0xdb6b1d736b1fb9a44dc1e18c845df63c6c164b32b3643a18c0147c4922c63c0a",
+ "saltPreimage": "UN1.infrastructure.v1",
+ "contracts": [
+  {
+   "name": "masks",
+   "contract": "src/data/UN1MasksData.sol:UN1MasksData",
+   "address": "0x2f9A3fD93E36809bAFD847A29b5E6C0DBdeA4B4A",
+   "constructorArguments": [],
+   "initCodeBytes": 11947,
+   "initCodeHash": "0xc8a951afb0ed74881cf80b129d6b39fc0f949cbfd6d351430ded24accff7fea6",
+   "runtimeBytes": 10330,
+   "runtimeCodeHash": "0x3c6b7245524a4f9cd7a2287c4d6bd6f029b04330b06a7145f26454a83f0dbacc",
+   "calldata": "launch-build/infra/masks.calldata.hex"
+  },
+  {
+   "name": "parts",
+   "contract": "src/data/UN1PartsData.sol:UN1PartsData",
+   "address": "0x94b5de3277b44959B2e5A9F0dD834209203b95D2",
+   "constructorArguments": [],
+   "initCodeBytes": 9196,
+   "initCodeHash": "0x5a72587ddbdf84d84ca3028807bd1c9984f937ae5f6e04c80ab232c1ca54670c",
+   "runtimeBytes": 16897,
+   "runtimeCodeHash": "0x5604736e4e909c783b91a9822538b8e441fbd694562e4164c94b74c39963b3e4",
+   "calldata": "launch-build/infra/parts.calldata.hex"
+  },
+  {
+   "name": "renderer",
+   "contract": "src/UN1Renderer.sol:UN1Renderer",
+   "address": "0xFe7a28d87Aae6a519d1f52960CE8744bD408361F",
+   "constructorArguments": [
+    "0x94b5de3277b44959B2e5A9F0dD834209203b95D2"
+   ],
+   "initCodeBytes": 20409,
+   "initCodeHash": "0x4a7b4c3f2a18c9d57d588b9fcb9363a7aca2a45fc82ca174130d5217b3c92f83",
+   "runtimeBytes": 19946,
+   "runtimeCodeHash": "0xf5604505ed7e1ba7e07792b705736378ac86e8da52fc6e8471e92fd78520cd4b",
+   "calldata": "launch-build/infra/renderer.calldata.hex"
+  },
+  {
+   "name": "beacon",
+   "contract": "src/UN1Beacon.sol:UN1Beacon",
+   "address": "0xe9A1C3c7455bC9B2d706FA68e511080863C58937",
+   "constructorArguments": [
+    "0x5B1f03F12172F1953f69AA8a3Cbba99aaff02676",
+    "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984"
+   ],
+   "initCodeBytes": 6886,
+   "initCodeHash": "0xcf3761274e5dfd02262eb87a98c2577bc8a5d039c808fb424c4c0ee94b37ff75",
+   "runtimeBytes": 6612,
+   "runtimeCodeHash": "0x3090d2054d3ba3c081bb03c8abb30de7e4cf560d1b27e44a0bcbaf5072b9e1bc",
+   "calldata": "launch-build/infra/beacon.calldata.hex"
+  }
+ ],
+ "tokenPrediction": {
+  "targetId": "un1-token",
+  "address": "0x5B1f03F12172F1953f69AA8a3Cbba99aaff02676",
+  "graphFactory": "0xB012e4A8F2c5FC4E8E4faCA9D5Ad6FfF13FBA887",
+  "router": "0xBE4bF6Ac8c6F012E1C8f25747A9fBccB2FDAC4C3",
+  "launchWallet": "0x722FEad20748DEdB2AB2AE22DfCe77971B394043",
+  "nonce": "0x0dab0f535f09776465dbef4f72f2df54c2345cc9bef120b6b5f2be08f0cb898c",
+  "sourceBundleSha256": "sha256:5e40d2d52f06b9bcfa83d1332e7339bc65d491088c3ed826f128362d1f005e1f",
+  "routeNamespace": "0x4d979fc1ada7ddd112507b11623179b399b0890ea4f4a103c0529efb5b471028",
+  "targetIdHash": "0x90fc76286a450a790b881f683d6fe3036c74b4c5280a5eab8cf6d9f7369bd028",
+  "applicantSalt": "0x0000000000000000000000000000000000000000000000000000000000000001",
+  "effectiveSalt": "0x873c843eb4ba4425a6aaea078660fee04e2598797a459f4cf276333a7f9b384d",
+  "initCodeHash": "0xb0453da0b059d99dfc8efe9df7f5f33809d7072b80c5295ab5d966ae4df4adc1",
+  "bundleFiles": [
+   {
+    "path": "foundry.toml",
+    "sha256": "sha256:f8fa68189d9784e386e4c19642c412f192ee4a19b9cc5aca5a33184d6b919a26"
+   },
+   {
+    "path": "launch-build/artifacts/UN1Distributor.json",
+    "sha256": "sha256:6d4df046f4595a1d3a050fed6214d6aeb788f653214b7bec4c204051e497637b"
+   },
+   {
+    "path": "launch-build/artifacts/UN1Hook.json",
+    "sha256": "sha256:71cced11fda04bd3f1856bcf8f444bc0978a5c015726e29ab70a4935e54d564c"
+   },
+   {
+    "path": "launch-build/artifacts/UN1Mirror.json",
+    "sha256": "sha256:827138cf54b3a771841eb7e469af474b496774625cd938a448aa7a9ef2c307d5"
+   },
+   {
+    "path": "launch-build/artifacts/UN1Seeder.json",
+    "sha256": "sha256:e12f625cc9b7c65eb9e657a4c9d593bd64160d659408aa484e42364dcca3eddd"
+   },
+   {
+    "path": "launch-build/artifacts/UN1Token.json",
+    "sha256": "sha256:626afd00ebcf56a5389976ade840f430ce6f66d47c8f72e9c14c52fef407a425"
+   },
+   {
+    "path": "launch-build/assets/un1.png",
+    "sha256": "sha256:945bc52f8ff1864bddfe2279d86c984660625d8d54a5e152b7462a98fb9b5175"
+   },
+   {
+    "path": "launch-build/evidence/forge-test-report.json",
+    "sha256": "sha256:2914c528b76b793ec843637c3c425ed4b8727b6db050ee49c5b05c0d4a9329cb"
+   },
+   {
+    "path": "launch-build/evidence/gas-report.json",
+    "sha256": "sha256:35191c7b697ea465e3aa7ca8fc2c5e94edb7ed7cbc456898b80838778384a8e4"
+   },
+   {
+    "path": "launch-build/un1.standard-json.json",
+    "sha256": "sha256:4f1f17274efbf318b496060c42d2a6bb4a11b2532de295d65bfd53be476d7a05"
+   },
+   {
+    "path": "remappings.txt",
+    "sha256": "sha256:1cc2d10d60a07968f839c160b167256d847a18cb3c1f1c2786910fd1bdc35665"
+   },
+   {
+    "path": "src/UN1Beacon.sol",
+    "sha256": "sha256:bfbed3909a6817a0621e1321ea84ba2ac57b5da84ba220452b04921f4e8fcf32"
+   },
+   {
+    "path": "src/UN1Distributor.sol",
+    "sha256": "sha256:9e45530426f1dd7936b02f1210ca1bc73f2e0f0d89aeeb16aa280181c91e11c6"
+   },
+   {
+    "path": "src/UN1Hook.sol",
+    "sha256": "sha256:53fe21461af39debcfc2e9cba3d310c7683c830f25801c62059f2eb637783927"
+   },
+   {
+    "path": "src/UN1Mirror.sol",
+    "sha256": "sha256:4b9639c53d326e418a733ede4b13c0f9dfae3e7f7984f06a3e90868fdbe593dc"
+   },
+   {
+    "path": "src/UN1Renderer.sol",
+    "sha256": "sha256:fcd2208a3c008af7686a560f81db5aa5b150d8aad26b96af9b76c7e352aa40ca"
+   },
+   {
+    "path": "src/UN1Seeder.sol",
+    "sha256": "sha256:4ab2bd008117b325cd1c09ccf05ef4f9f694a2c33f1dd8fd76a57773512ce063"
+   },
+   {
+    "path": "src/UN1Token.sol",
+    "sha256": "sha256:222074894b4031710371b0a2a08f9cd197feb2caf40a64e8066840f203ea89ab"
+   },
+   {
+    "path": "src/data/UN1MasksData.sol",
+    "sha256": "sha256:d29d1473d8a2480dc9bef4eed1fbf7ac8c0a575ca1d609e8b2c220680b0206ce"
+   },
+   {
+    "path": "src/data/UN1PartsData.sol",
+    "sha256": "sha256:07ce4929c47f05216c19761f0d1f2a616631583828b7eed8cab387e2a4499583"
+   },
+   {
+    "path": "src/libraries/Appearance.sol",
+    "sha256": "sha256:3a512ddab6bd1d0b1f4f358282b3ffecfaf07eeb39e922e48e9a4ee3398e26c8"
+   },
+   {
+    "path": "src/libraries/Buf.sol",
+    "sha256": "sha256:cb5fd90682e4012c33c8337920889a2f564918bdd348d14bf235f96f13a96468"
+   },
+   {
+    "path": "src/libraries/Deal.sol",
+    "sha256": "sha256:b2364ab893e76d811e8d89b49dc36b40d0ab62dde9fa9f1d540f9d24fa1c7ac9"
+   },
+   {
+    "path": "src/libraries/DrandBeacon.sol",
+    "sha256": "sha256:1244f31595917da6c23cd280be6c99f0be08e7e310fe8181eeab567077df8fe9"
+   },
+   {
+    "path": "src/libraries/DrandRound.sol",
+    "sha256": "sha256:25be36694fdee119de5bf69f016344d7c958d048936a7182fd662cd7fdd93f97"
+   },
+   {
+    "path": "src/libraries/FeeMath.sol",
+    "sha256": "sha256:65c3a1d9e2cdb5ae0016d68c4ebee1caac917d732eff5309285f73879c302865"
+   },
+   {
+    "path": "src/libraries/Polish.sol",
+    "sha256": "sha256:4fab69998c125c392995b74151adb1f5a0affcd902a5f53cc048a2d42f6a64b3"
+   }
+  ]
+ }
+}

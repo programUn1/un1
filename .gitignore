@@ -1,0 +1,22 @@
+# build output
+out/
+cache/
+broadcast/
+
+# launch inputs: the pack request carries the config; the infrastructure calldata is only for deploying
+programmable-launch.config.json
+launch-build/infra/
+# superseded evidence files (2026-10-15), not part of the source bundle
+launch-build/evidence/preflight-design-doc.json
+launch-build/evidence/test-report-doc.json
+
+# secrets
+.env
+.env.*
+*.key
+*.pem
+
+# packed launch request and receipt (the request carries the full source; it is submitted, not committed)
+launch.json
+launch.receipt.json
+launch.json.receipt.json

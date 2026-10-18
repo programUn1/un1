@@ -1,0 +1,3 @@
+# Keep every file byte for byte (no line-ending conversion): the Programmable source bundle hashes the exact bytes,
+# so the published commit must contain the same bytes as the packed files.
+* -text

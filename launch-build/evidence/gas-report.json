@@ -1,0 +1,5 @@
+{
+ "checkId": "gas-report",
+ "file": "contracts/reports/gas-report.txt",
+ "sha256": "sha256:5a348f68f8bcadeb9f74ac5646404c3bc5c24ff3947c5ff7b8412b84f9c99137"
+}

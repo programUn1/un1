@@ -1,0 +1,5 @@
+{
+ "checkId": "forge-test-report",
+ "file": "contracts/reports/test-results.txt",
+ "sha256": "sha256:79c7cfc3af46fa9603109cd445a661cdd160e3cff52cc596b9334958182b3048"
+}

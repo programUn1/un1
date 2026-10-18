@@ -1,0 +1,553 @@
+No files changed, compilation skipped
+
+Ran 3 tests for test/Algorithms.t.sol:AlgorithmsTest
+[PASS] testFuzz_deal_isAPermutationOfAllIds(bytes32) (runs: 16, μ: 28304550, ~: 28305085)
+[PASS] testFuzz_drandTarget_15to44SecondsLater(uint40) (runs: 1000, μ: 7640, ~: 7640)
+[PASS] test_deal_walkGas() (gas: 14380191)
+Logs:
+  10,000 steps of Deal.at (no pool check): 14376862
+
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 832.21ms (832.00ms CPU time)
+
+Ran 26 tests for test/Cards.t.sol:CardsTest
+[PASS] testFuzz_invariants(uint96,uint96,uint96,uint96,bytes32) (runs: 1000, μ: 4676496, ~: 5160775)
+Logs:
+  Bound result 19990000000000004022
+  Bound result 19990000000197902836
+  Bound result 797
+  Bound result 18589654024234644632
+
+[PASS] testFuzz_regression_dust(bytes32) (runs: 1000, μ: 5874519, ~: 5874402)
+[PASS] test_7702Account_isWeightedAutomatically() (gas: 679612)
+[PASS] test_appearance_matchesPythonReference() (gas: 19692)
+[PASS] test_badMasks_rejected() (gas: 12471349)
+[PASS] test_buyThenReveal_dealsDistinctIdsFromPool() (gas: 1098322)
+[PASS] test_contractHolder_holdsWithoutWeight_untilOptIn() (gas: 867446)
+[PASS] test_deal_isPermutation() (gas: 25088761)
+[PASS] test_fractionalTransfer_noCatch_decoheres() (gas: 746535)
+[PASS] test_fractionalTransfer_receiverCatchesTheCard() (gas: 755696)
+[PASS] test_gas_perUnit() (gas: 7121648)
+Logs:
+  buy 50 (swap + 50 slots): 2001589
+  reveal 50: 4777624
+  transfer 50 cards: 1159633
+  sell 50 cards into the pool: 959490
+
+[PASS] test_masks_matchBitcoinData() (gas: 24241)
+[PASS] test_measure_storesDetails_keptOnTransfer() (gas: 730661)
+[PASS] test_mirrorTransfer_movesTheNamedCard_evenWithPendingSlots() (gas: 1072668)
+[PASS] test_mirror_approvals() (gas: 736459)
+[PASS] test_pendingSlot_followsTheToken() (gas: 673437)
+[PASS] test_poolManager_neverHoldsCards() (gas: 622364)
+[PASS] test_regression_dust_reportedSalt() (gas: 5845565)
+[PASS] test_reveal_onlyBeacon_andRoundOrder() (gas: 999547)
+[PASS] test_sellBeforeReveal_cancelsPendingFirst() (gas: 909501)
+[PASS] test_sellIntoPool_decoheres() (gas: 651200)
+[PASS] test_sellOrder_fewestPartsFirst() (gas: 1708269)
+[PASS] test_sellOrder_nakedBeforeCards() (gas: 915722)
+[PASS] test_setOutFirst_choosesTheCardToSell() (gas: 995675)
+[PASS] test_targetRound_isBucketedAndAfterDelay() (gas: 6660)
+[PASS] test_walletTransfer_movesCardsAndKeepsLook() (gas: 1048788)
+Suite result: ok. 26 passed; 0 failed; 0 skipped; finished in 5.40s (5.40s CPU time)
+
+Ran 14 tests for test/Compose.t.sol:ComposeTest
+[PASS] test_cardWeight_levelV() (gas: 18208)
+[PASS] test_compose_commitmentWrapsBothInputsAndTheHead() (gas: 6894469)
+[PASS] test_compose_detailsTravelWithTheirParts() (gas: 6969155)
+[PASS] test_compose_gas() (gas: 6614938)
+Logs:
+  compose gas: 183173
+
+[PASS] test_compose_keptCard_unionAndLockedLook() (gas: 6971047)
+[PASS] test_compose_ofWorks_layersAddUp() (gas: 21548656)
+[PASS] test_compose_pendingSlotsCannotCompose() (gas: 504082)
+[PASS] test_compose_rejects() (gas: 45868839)
+[PASS] test_compose_retiresOther_burnsOne_advancesChain() (gas: 7133720)
+[PASS] test_halving_followsComposeCount() (gas: 195354)
+[PASS] test_proof_isNotBoundToTheChainHead() (gas: 105522710)
+[PASS] test_workSoldIntoPool_fallsBackToItsOwnParts() (gas: 20017827)
+[PASS] test_work_survivesWalletAndMirrorTransfers() (gas: 5444304)
+[PASS] test_works_leaveLast() (gas: 16593024)
+Suite result: ok. 14 passed; 0 failed; 0 skipped; finished in 410.99ms (408.58ms CPU time)
+
+Ran 16 tests for test/Findings.t.sol:FindingsTest
+[PASS] testFuzz_G1_tinyPool_revealStaysBounded(bytes32) (runs: 1000, μ: 2287657, ~: 2507583)
+[PASS] testFuzz_K2_slotsNeverExceedTokensBought(uint64[6],bool[6]) (runs: 1000, μ: 1206858, ~: 1203384)
+Logs:
+  Bound result 2999000000000000011
+  Bound result 2999000000000005060
+  Bound result 1200000000000000000
+  Bound result 2999000000000000513
+  Bound result 2999000000000064801
+  Bound result 2999000000000002648
+
+[PASS] test_G1_lastIdLeft_isFound() (gas: 2514051)
+[PASS] test_K1_default_aFractionalSale_dissolvesTheLastWork() (gas: 26742575)
+[PASS] test_K1_guard_blocksTheSaleThatWouldDissolveAWork() (gas: 26862428)
+[PASS] test_K1_guard_stillLetsTheWorkMoveWhole() (gas: 26816632)
+[PASS] test_K2_dust_cannotReplaceACancelledSlot() (gas: 627082)
+[PASS] test_K2_dust_doesNotDrawAgain() (gas: 725003)
+[PASS] test_K2_transfersCarryNoCredit() (gas: 657519)
+[PASS] test_K2_wholeTokenBoughtInParts_draws() (gas: 689701)
+[PASS] test_K4_firstSwapIsTheLaunchBuy_countedAsTheDevelopers() (gas: 5212901)
+[PASS] test_K5_revoke_neverTouchesWalletsOr7702Accounts() (gas: 684993)
+[PASS] test_K5_revoke_removesTheWeightOfAContractThatGotCodeLater() (gas: 703416)
+[PASS] test_K6_kept_approvalSurvivesCompose() (gas: 450500276)
+[PASS] test_K7_leftoverOutFirst_isVisible_andClearable() (gas: 104979042)
+[PASS] test_K7_outFirstOf_inLeaveOrder() (gas: 65297)
+Suite result: ok. 16 passed; 0 failed; 0 skipped; finished in 5.23s (5.23s CPU time)
+
+Ran 7 tests for test/Fork.t.sol:ForkTest
+[PASS] test_fork_eip2935_history() (gas: 12187)
+[PASS] test_fork_feesToHolders_andPermanentBids() (gas: 24929272)
+Logs:
+  holders' stream (UNI): 6144561407850234230
+  reserve deployed as bids (UNI): 877794486835747746
+
+[PASS] test_fork_launch_oneTransaction() (gas: 68005)
+Logs:
+  fork block: 26184046
+  UNI from 0.2 ETH: 67759863215458184924
+  dev buy, tokens: 130267149098993216544
+  platform fee on the first buy (UNI): 101639794823187277
+  UNI dust to dev: 0
+
+[PASS] test_fork_launch_onlyOnce_onlyDeployer() (gas: 17915)
+[PASS] test_fork_revealWithRealDrand_onMainnetPrecompiles() (gas: 15756356)
+Logs:
+  reveal 64 slots gas (real signature, mainnet precompiles): 6223921
+  reveal calls for all slots: 2
+  cards revealed: 75
+
+[PASS] test_fork_universalRouter_buyAndSell() (gas: 3207824)
+Logs:
+  deployed ExactInputSingleParams: without minHopPriceX36
+  router buy gas: 2672461
+  tokens for 20 UNI: 75481247982203701610
+  router sell gas: 340884
+
+[PASS] test_fork_universalRouter_multiHop_ETH_UNI_UN1() (gas: 2353935)
+Logs:
+  router ETH -> UNI -> UN1 gas: 2326494
+  tokens for 0.05 ETH: 63996082591984702262
+
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 1.12s (24.48ms CPU time)
+
+Ran 10 tests for test/ForkEdge.t.sol:ForkEdgeTest
+[PASS] test_aggregator_cowSettlement_forwardsSlots() (gas: 56077187)
+Logs:
+  ignite gas: 852935
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13272818
+
+[PASS] test_aggregator_oneInchRouter_forwardsSlots() (gas: 56098472)
+Logs:
+  ignite gas: 852935
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13272818
+
+[PASS] test_directLocker_claimsRedeemedInTheSameTransaction() (gas: 48005438)
+Logs:
+  ignite gas: 852935
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13272818
+
+[PASS] test_directLocker_erc6909Claims() (gas: 44410775)
+Logs:
+  ignite gas: 902207
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 14373390
+
+[PASS] test_directLocker_settleFirst() (gas: 48013742)
+Logs:
+  ignite gas: 852935
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13272818
+
+[PASS] test_quoter_multiHop_ETH_matchesTheRouter() (gas: 48039619)
+Logs:
+  ignite gas: 852935
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13272818
+  quote: tokens for 0.05 ETH: 63996082591984702262
+
+[PASS] test_quoter_singleHop_matchesTheRouter() (gas: 47588144)
+Logs:
+  ignite gas: 852935
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13272818
+  quote: tokens for 10 UNI: 37869271448797904481
+
+[PASS] test_real7702Delegation_isWeightedAutomatically() (gas: 55538106)
+Logs:
+  ignite gas: 852935
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13272818
+
+[PASS] test_realSafe_holdsCards_thenOptsIn_andMovesACard() (gas: 55926657)
+Logs:
+  ignite gas: 852935
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13272818
+
+[PASS] test_uniswapX_permit2Pull_movesCardsAsTheyAre() (gas: 55641226)
+Logs:
+  ignite gas: 852935
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13272818
+
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 1.34s (290.60ms CPU time)
+
+Ran 6 tests for test/ForkProtection.t.sol:ForkProtectionTest
+[PASS] test_fork_protection_buyerLimitWithTheRealRouter() (gas: 42286369)
+Logs:
+  ignite gas: 852935
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13272818
+
+[PASS] test_fork_protection_canonicalRouterNamesTheBuyer_andTheOpeningFeeGoesToThePlatform() (gas: 40258811)
+Logs:
+  ignite gas: 852935
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13272818
+  tokens for 10 UNI at second 10: 12911597759108067551
+
+[PASS] test_fork_protection_multiHop_ETH_UNI_UN1_throughTheCanonicalRouter() (gas: 40247768)
+Logs:
+  ignite gas: 852935
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13272818
+
+[PASS] test_fork_protection_olderRouterCannotBuy_untilProtectionEnds() (gas: 40319091)
+Logs:
+  ignite gas: 852935
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13272818
+
+[PASS] test_fork_protection_openingValuationAgainstChainlink() (gas: 37755968)
+Logs:
+  opening valuation at 0.25 UNI per token (USD): 18521
+
+[PASS] test_fork_protection_routerSimulationQuotesTheBuy() (gas: 40371497)
+Logs:
+  ignite gas: 852935
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13272818
+
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 1.05s (120.11ms CPU time)
+
+Ran 14 tests for test/ForkRehearsal.t.sol:ForkRehearsalTest
+[PASS] test_infrastructure_matchesLaunchBuild() (gas: 20471065)
+Logs:
+  pre-launch deployment gas masks: 2121105
+  pre-launch deployment gas parts: 3435195
+  pre-launch deployment gas renderer: 4183304
+  pre-launch deployment gas beacon: 1373770
+
+[PASS] test_launchBuild_tokenPredictionMatchesTheFactory() (gas: 65243)
+[PASS] test_realFactory_launchRevertsWithABeaconBoundElsewhere() (gas: 42794393)
+Logs:
+  real factory deployGraph: execution gas: 11403220
+  real factory deployGraph: calldata gas: 895372
+
+[PASS] test_realFactory_launchRevertsWithoutADevBuy() (gas: 41494121)
+Logs:
+  real factory deployGraph: execution gas: 11612693
+  real factory deployGraph: calldata gas: 895300
+
+[PASS] test_realFactory_launch_tokenAboveUni_devBuy() (gas: 45816517)
+Logs:
+  real factory deployGraph: execution gas: 12556056
+  real factory deployGraph: calldata gas: 895396
+  real factory launch transaction gas (without the router): 13472452
+  tokens for 10 UNI after launch: 37869271448797904481
+
+[PASS] test_realFactory_launch_tokenBelowUni_smallDevBuy() (gas: 136592397)
+Logs:
+  real factory deployGraph: execution gas: 12523920
+  real factory deployGraph: calldata gas: 895444
+  real factory launch transaction gas (without the router): 13440364
+  tokens for 10 UNI after launch: 38541881705993397713
+
+[PASS] test_realFactory_onlyTheAuthorizedLauncher() (gas: 36413)
+[PASS] test_rehearsal_defaultDevBuy_tokenAboveUni() (gas: 41046805)
+Logs:
+  ignite gas: 853015
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13273058
+  UNI dust to dev: 0
+  tokens for 10 UNI after launch: 37869271448797904481
+
+[PASS] test_rehearsal_defaultDevBuy_tokenBelowUni() (gas: 65439108)
+Logs:
+  ignite gas: 848254
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13268297
+  UNI dust to dev: 0
+  tokens for 10 UNI after launch: 37869271448797904481
+
+[PASS] test_rehearsal_devBuyAbove2Percent_reverts() (gas: 38537492)
+[PASS] test_rehearsal_initializersAreDeployerOnly() (gas: 39804372)
+[PASS] test_rehearsal_noDevBuy_reverts() (gas: 38798142)
+[PASS] test_rehearsal_smallDevBuy_tokenAboveUni() (gas: 119172383)
+Logs:
+  ignite gas: 826528
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13246559
+  UNI dust to dev: 0
+  tokens for 10 UNI after launch: 38541881705993397713
+
+[PASS] test_rehearsal_smallDevBuy_tokenBelowUni() (gas: 45402386)
+Logs:
+  ignite gas: 820879
+  launch transaction gas (5 deployments + initializers + ignite + calldata): 13240922
+  UNI dust to dev: 0
+  tokens for 10 UNI after launch: 38541881705993397713
+
+Suite result: ok. 14 passed; 0 failed; 0 skipped; finished in 1.45s (500.54ms CPU time)
+
+Ran 13 tests for test/LaunchProtection.t.sol:LaunchProtectionTest
+[PASS] test_buyerLimit_isCumulative_andSellsDoNotGiveRoomBack() (gas: 8656071)
+[PASS] test_buys_onlyThroughTheCanonicalRouter_duringProtection() (gas: 1196380)
+[PASS] test_launchBuy_countsAsTheDevelopers_withoutOpeningFee() (gas: 5095504)
+[PASS] test_launchBuy_isCappedAt2Percent() (gas: 235666)
+[PASS] test_openingFee_developerPaysNone() (gas: 18445)
+[PASS] test_openingFee_fallsLinearlyFrom99Percent() (gas: 40826)
+[PASS] test_openingFee_goesToThePlatform_normalFeeSplitAsUsual() (gas: 867915)
+[PASS] test_openingFee_onExactOutputBuys() (gas: 768930)
+[PASS] test_protection_cannotBeRestarted() (gas: 18372)
+[PASS] test_protection_startsWithThePool() (gas: 28631)
+[PASS] test_recipientLimit_countsBuysAndTransfersTogether() (gas: 5440818)
+[PASS] test_recipientLimit_ignoresThePoolManager() (gas: 12858)
+[PASS] test_recipientLimit_isCumulative() (gas: 178515)
+Suite result: ok. 13 passed; 0 failed; 0 skipped; finished in 10.04ms (7.42ms CPU time)
+
+Ran 15 tests for test/OnlyHook.t.sol:OnlyHookTest
+[PASS] test_buyExactIn_paysFeeInUni() (gas: 3143822)
+[PASS] test_buyExactOut_paysFeeInUni() (gas: 734333)
+[PASS] test_collect_paysOnlyFixedRecipients() (gas: 3171000)
+[PASS] test_directTransferToPoolManager_reverts() (gas: 11336)
+[PASS] test_foreignPool_cannotTakeLiquidity() (gas: 272585)
+[PASS] test_foreignPool_uniOnlyLiquidity_cannotSwapToken() (gas: 320536)
+[PASS] test_fractionalBuys_openSlotOnlyWhenCrossingWholeToken() (gas: 544101)
+[PASS] test_halvingFee_epoch1() (gas: 16105)
+[PASS] test_officialBuy_opensPendingSlotsForRecipient() (gas: 530250)
+[PASS] test_permissions() (gas: 31479)
+[PASS] test_removeLiquidity_givesNakedTokens() (gas: 184508)
+[PASS] test_secondPoolWithOurHook_reverts() (gas: 25794)
+[PASS] test_sellExactIn_paysFeeInUni() (gas: 286802)
+[PASS] test_sellExactOut_paysFeeInUni() (gas: 287868)
+[PASS] test_walletTransfer_noDraw() (gas: 82338)
+Suite result: ok. 15 passed; 0 failed; 0 skipped; finished in 5.84ms (3.53ms CPU time)
+
+Ran 10 tests for test/Preflight.t.sol:PreflightTest
+[PASS] test_hook_addressMaskMatchesDeclaredPermissions() (gas: 14129)
+[PASS] test_hook_boundToTheMainnetPoolManagerAddress() (gas: 10947)
+[PASS] test_hook_enabledCallbacksAuthenticated_disabledNotImplemented() (gas: 62735)
+[PASS] test_hook_refusesPoolsBeforeInitialize() (gas: 4259328)
+[PASS] test_initializers_deployerOnly_once() (gas: 34344)
+[PASS] test_initializers_requireTheBeaconBoundToThisToken() (gas: 6402341)
+[PASS] test_runtimes_noCallcodeDelegatecallSelfdestruct() (gas: 20769361)
+Logs:
+  UN1MasksData (infra) runtime bytes: 10330
+  UN1PartsData (infra) runtime bytes: 16897
+  UN1Token runtime bytes: 20043
+  UN1Hook runtime bytes: 11804
+  UN1Beacon (infra) runtime bytes: 6612
+  UN1Distributor runtime bytes: 7373
+  UN1Renderer (infra) runtime bytes: 19946
+  UN1Mirror runtime bytes: 4203
+  UN1Seeder runtime bytes: 11039
+
+[PASS] test_runtimes_noCborMetadata() (gas: 51868023)
+[PASS] test_sizes_withinEip170AndGraphLimits() (gas: 207563)
+Logs:
+  aggregate init code, graph + infrastructure (bytes): 107462
+
+[PASS] test_sources_noSelfdestruct() (gas: 201563293)
+Suite result: ok. 10 passed; 0 failed; 0 skipped; finished in 332.29ms (330.01ms CPU time)
+
+Ran 5 tests for test/Render.t.sol:RenderTest
+[PASS] test_badParts_rejected() (gas: 49173734)
+[PASS] test_fixtures_matchPythonByteForByte() (gas: 457694698)
+[PASS] test_render_worstCaseGas() (gas: 24976998)
+Logs:
+  render, 1 part (most text): 6099999
+  render, Level V all rainbow (most rects): 18870441
+
+[PASS] test_tokenURI_ofARealCard_throughTheMirror() (gas: 14660971)
+Logs:
+  tokenURI gas (eth_call): 7003711
+
+[PASS] test_tokenURI_revertsForPoolAndRetiredIds() (gas: 16525)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 658.61ms (656.38ms CPU time)
+
+Ran 16 tests for test/Reveal.t.sol:RevealTest
+[PASS] test_bountyReserve_capThenDev() (gas: 486005779)
+[PASS] test_bounty_baseOncePerRound_plusPerSlot() (gas: 1270701)
+[PASS] test_bounty_cappedByTheDevFeeOfTheRoundsBuys() (gas: 1269927)
+[PASS] test_bounty_comesFromDevFee_andIsCapped() (gas: 3357010)
+[PASS] test_bounty_selfMadeRound_neverPaysMoreThanItsFees() (gas: 894662)
+[PASS] test_bounty_sellsDoNotFundRounds() (gas: 691256)
+[PASS] test_buy_targetsTheBucketRound() (gas: 501923)
+[PASS] test_fallback_needsTheBlockHash() (gas: 464135)
+[PASS] test_fallback_onlyAfterOneDay() (gas: 931184)
+[PASS] test_reveal_cannotSkipAnEarlierRound() (gas: 1168328)
+[PASS] test_reveal_gas() (gas: 3663110)
+Logs:
+  reveal 1 slot (verify + measure + bounty): 489893
+  reveal 20 more slots: 2053804
+
+[PASS] test_reveal_rejectsBadInput() (gas: 807285)
+[PASS] test_reveal_resultIsFixedBySignature_notByCaller() (gas: 1951253)
+[PASS] test_reveal_withRealSignature() (gas: 1376675)
+[PASS] test_verify_gas() (gas: 164810)
+Logs:
+  drand verify gas: 162603
+
+[PASS] test_verify_realSignatures() (gas: 819134)
+Suite result: ok. 16 passed; 0 failed; 0 skipped; finished in 183.18ms (181.03ms CPU time)
+
+Ran 1 test for test/review/ReviewAllowanceIsolation.t.sol:ReviewAllowanceIsolationTest
+[PASS] test_Review_closedOfficialPositionLeavesNoAllowanceForAnotherPool() (gas: 1523617)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 2.57ms (334.70µs CPU time)
+
+Ran 1 test for test/review/ReviewBeaconRandomness.t.sol:ReviewBeaconRandomnessTest
+[PASS] test_review_aStartedRoundKeepsItsRandomness_whicheverEntryPoint() (gas: 1493541)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 3.58ms (1.38ms CPU time)
+
+Ran 2 tests for test/review/ReviewClaimsThroughLiquidity.t.sol:ReviewClaimsThroughLiquidityTest
+[PASS] test_Review_aForeignPoolTradesClaimsButNeverPaysOutTheToken() (gas: 1194239)
+[PASS] test_Review_claimsReturnAsNakedTokensOnlyThroughAnOfficialPosition() (gas: 839084)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 4.31ms (2.23ms CPU time)
+
+Ran 1 test for test/review/ReviewDealFairness.t.sol:ReviewDealFairnessTest
+[PASS] test_Review_fallbackDrawsUniformlyAmongTheIdsLeft() (gas: 516192760)
+Logs:
+  samples: 128
+  all selections of ID 1: 61
+  fallback samples: 102
+  fallback selections of ID 1: 50
+
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 825.16ms (823.13ms CPU time)
+
+Ran 2 tests for test/review/ReviewFeeOrders.t.sol:ReviewFeeMathRoundingTest
+[PASS] testFuzz_review_feeRoundingBounds(uint128,uint16) (runs: 1000, μ: 7595, ~: 7683)
+[PASS] test_review_smallAmountRoundingBoundaries() (gas: 8880)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 14.48ms (14.40ms CPU time)
+
+Ran 4 tests for test/review/ReviewFeeOrders.t.sol:ReviewFeeOrdersTokenFirstTest
+[PASS] test_review_buyExactInput_bothOrders() (gas: 710345)
+[PASS] test_review_buyExactOutput_bothOrders() (gas: 739611)
+[PASS] test_review_sellExactInput_bothOrders() (gas: 307274)
+[PASS] test_review_sellExactOutput_bothOrders() (gas: 306504)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 3.12ms (1.06ms CPU time)
+
+Ran 4 tests for test/review/ReviewFeeOrders.t.sol:ReviewFeeOrdersUniFirstTest
+[PASS] test_review_buyExactInput_bothOrders() (gas: 717241)
+[PASS] test_review_buyExactOutput_bothOrders() (gas: 744630)
+[PASS] test_review_sellExactInput_bothOrders() (gas: 300356)
+[PASS] test_review_sellExactOutput_bothOrders() (gas: 301463)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 3.10ms (1.15ms CPU time)
+
+Ran 1 test for test/review/ReviewHookAccounting.t.sol:ReviewHookAccountingTest
+[PASS] test_review_collectingForTheBeacon_doesNotRaiseTheReserve() (gas: 486387424)
+Logs:
+  beacon reserve (held + owed): 50000000000000000000
+
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 163.08ms (161.01ms CPU time)
+
+Ran 5 tests for test/review/ReviewPoolOrder.t.sol:ReviewPoolOrderTest
+[PASS] testFuzz_addingAnIdDoesNotReorderExistingIds(bytes32,uint16,uint16,uint16) (runs: 1000, μ: 4126804, ~: 4569800)
+Logs:
+  Bound result 59
+  Bound result 3
+  Bound result 1
+
+[PASS] test_Review_addedPrefixIdCanReplaceOnlyTheFallbackResult() (gas: 2976388)
+[PASS] test_Review_largestPossibleFallbackPoolFitsTransactionGas() (gas: 10279093)
+Logs:
+  gas: 8,976 remaining ids after a missed 1,024-id prefix: 7302258
+
+[PASS] test_Review_oneToThreeRemainingIdsStayBelowThreeMillionGas() (gas: 6888128)
+Logs:
+  gas: cold fallback with 1 ids: 2102802
+  gas: cold fallback with 2 ids: 2103379
+  gas: cold fallback with 3 ids: 2103956
+
+[PASS] test_Review_saleCannotSwitchBetweenOtherPoolIds() (gas: 4888822)
+Suite result: ok. 5 passed; 0 failed; 0 skipped; finished in 6.14s (6.14s CPU time)
+
+Ran 4 tests for test/review/ReviewR02SettlementScopes.t.sol:ReviewR02SettlementScopesTest
+[PASS] test_control_immediateIndependentSettlements_work() (gas: 574509)
+[PASS] test_control_singleExecutorNetSettlement_works() (gas: 460564)
+[PASS] test_deferredIndependentSettlements_buyerFirst_work() (gas: 574499)
+[PASS] test_deferredIndependentSettlements_sellerFirst_work() (gas: 574454)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 3.54ms (1.38ms CPU time)
+
+Ran 3 tests for test/review/ReviewRevealQueue.t.sol:ReviewRevealQueueTest
+[PASS] test_Review_cancelledOnlyQueue_isPrunedByAnyone() (gas: 731030)
+[PASS] test_Review_largeCancelledPrefix_isClearedInBoundedParts_thenRevealIsCheap() (gas: 336249747)
+Logs:
+  gas to prune 2,048 cancelled slots: 5227549
+  gas to reveal after pruning: 277486
+
+[PASS] test_Review_pruneStopsAtTheFirstLiveSlot() (gas: 1082487)
+Suite result: ok. 3 passed; 0 failed; 0 skipped; finished in 152.97ms (150.82ms CPU time)
+
+Ran 2 tests for test/review/ReviewRewardTransitions.t.sol:ReviewRewardTransitionsTest
+[PASS] test_Review_guardedCompose_preservesRewardAndUnitConservation() (gas: 460508187)
+[PASS] test_Review_revokeThenOptIn_preservesAccruedRewardsAndTimeShares() (gas: 6738819)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 160.59ms (158.44ms CPU time)
+
+Ran 7 tests for test/review/ReviewSeederLocal.t.sol:ReviewSeederLocalTest
+[PASS] test_protection_launchBuyAbove2PercentReverts() (gas: 21339524)
+[PASS] test_protection_launchBuyCountsAsTheDevelopers() (gas: 21666164)
+[PASS] test_protection_launchBuyIsRequired() (gas: 20902630)
+[PASS] test_protection_openingValuationFloor() (gas: 21712611)
+[PASS] test_protection_staleOrBrokenPriceReverts() (gas: 21751199)
+[PASS] test_review_localIgnite_tokenAfterUni() (gas: 21763836)
+[PASS] test_review_localIgnite_tokenBeforeUni() (gas: 21755874)
+Suite result: ok. 7 passed; 0 failed; 0 skipped; finished in 10.34ms (9.00ms CPU time)
+
+Ran 2 tests for test/review/ReviewSeederPrefund.t.sol:ReviewSeederPrefundTest
+[PASS] test_Review_aLargerPrefundStaysUntouched() (gas: 21581072)
+[PASS] test_Review_ethSentToTheSeederAddressBeforehandDoesNotBlockTheLaunch() (gas: 21585303)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 3.78ms (2.50ms CPU time)
+
+Ran 4 tests for test/review/ReviewSourceBoundary.t.sol:ReviewSourceBoundaryTest
+[PASS] test_review2_blockhash256ToHistory257HasNoSourceGap() (gas: 1029230)
+[PASS] test_review2_dayBoundary_keepsTheRoundsRandomness() (gas: 1479251)
+[PASS] test_review2_historyExpiry_keepsTheRoundsRandomness() (gas: 1477441)
+[PASS] test_review2_unstartedRound_followsTheWindows_thenStaysFixed() (gas: 848344)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 6.46ms (4.43ms CPU time)
+
+Ran 1 test for test/review/ReviewSparseBatch.t.sol:ReviewSparseBatchTest
+[PASS] test_sparsePool_largeBatchExceedsBudget_smallBatchesFinish() (gas: 128623450)
+Logs:
+  uncapped gas for 64 sparse pool slots: 53650769
+
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 194.97ms (192.81ms CPU time)
+
+Ran 2 tests for test/review/ReviewUnitsLeaveOrder.t.sol:ReviewUnitsLeaveOrderTest
+[PASS] test_Review_oldApprovalCanTakeNewlyComposedComponents() (gas: 253661974)
+[PASS] test_Review_outFirstDoesNotPrecedePendingSlots() (gas: 1109116)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 357.41ms (355.25ms CPU time)
+
+Ran 2 tests for test/review/ReviewUnitsTransientForce.t.sol:ReviewUnitsTransientForceTest
+[PASS] test_Review_mirrorSelfTransferClearsTokenApproval() (gas: 681163)
+[PASS] test_Review_selfTransferDoesNotLeakIntoAnotherAccountsTransfer() (gas: 3044322)
+Suite result: ok. 2 passed; 0 failed; 0 skipped; finished in 3.80ms (1.74ms CPU time)
+
+Ran 15 tests for test/Rewards.t.sol:RewardsTest
+[PASS] testFuzz_exactConservation(uint64) (runs: 1000, μ: 4914064, ~: 4870825)
+Logs:
+  Bound result 5588780978714978746
+  Bound result 114835
+  Bound result 3803508972029420466
+  Bound result 166200
+  Bound result 7991
+
+[PASS] test_buyAndSellInOneBlock_earnsNothing() (gas: 6366500)
+[PASS] test_claimFor_paysEachAccountToItself_aboveThreshold() (gas: 6067594)
+[PASS] test_contractWallet_earnsOnlyAfterOptIn() (gas: 5801236)
+[PASS] test_deployReserve_hourlyAndNeedsReserve() (gas: 35732519)
+[PASS] test_deployReserve_placesUniOnlyBidsBelowThePrice() (gas: 35745244)
+[PASS] test_lateJoiner_earnsOnlyFromJoining() (gas: 6058736)
+[PASS] test_newDeposit_rollsTheRestOfTheStream() (gas: 9837095)
+[PASS] test_noWeight_isCarried_thenStreamed() (gas: 11982982)
+[PASS] test_onlyDistributor() (gas: 16190)
+[PASS] test_reserve_buysWhenThePriceFalls() (gas: 36068657)
+[PASS] test_settlesBeforeEveryWeightChange() (gas: 5880469)
+[PASS] test_singleHolder_linearOverOneDay() (gas: 5738481)
+[PASS] test_sync_splitsSevenEighthsToHolders() (gas: 4757317)
+[PASS] test_twoHolders_proportionalToWeightAndTime() (gas: 6396583)
+Suite result: ok. 15 passed; 0 failed; 0 skipped; finished in 3.11s (3.11s CPU time)
+
+Ran 1 test for test/WebVectors.t.sol:WebVectorsTest
+[PASS] test_writeRouterVectors() (gas: 84282)
+Suite result: ok. 1 passed; 0 failed; 0 skipped; finished in 1.35ms (1.26ms CPU time)
+
+Ran 33 test suites in 29.21s (29.19s CPU time): 219 tests passed, 0 failed, 0 skipped (219 total tests)

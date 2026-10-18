@@ -1,0 +1,30 @@
+# UN1 contracts. The compiler must be the one version Programmable accepts: 0.8.26+commit.8a97fa7a
+[profile.default]
+src = "src"
+test = "test"
+script = "script"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.26"
+# Tests need Prague's EIP-2537 precompiles (drand signatures); solc 0.8.26 targets at most cancun, which Foundry uses to compile
+evm_version = "prague"
+optimizer = true
+optimizer_runs = 200
+# No CBOR metadata: Programmable disassembles runtime bytecode linearly, and metadata bytes could read as SELFDESTRUCT / CALLCODE
+cbor_metadata = false
+bytecode_hash = "none"
+fs_permissions = [{ access = "read", path = "../data/computed" }, { access = "read", path = "../art/exports" }, { access = "read", path = "./test/fixtures" }, { access = "read", path = "./src" }, { access = "read", path = "./launch-build/infrastructure.json" }, { access = "write", path = "../preview/onchain" }, { access = "write", path = "../web/tests" }]
+
+[profile.default.fuzz]
+runs = 1000
+
+[profile.default.invariant]
+runs = 64
+depth = 32
+fail_on_revert = false
+
+[rpc_endpoints]
+mainnet = "${ETH_RPC_URL}"
+
+[lint]
+lint_on_build = false
